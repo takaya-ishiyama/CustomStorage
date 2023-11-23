@@ -1,0 +1,6 @@
+{
+  "rust-analyzer.linkedProjects": [
+    "/home/takaya/MyPrograming/CustomStorage/apps/backend/Cargo.toml",
+    "./apps/backend/domain/Cargo.toml"
+  ]
+}
