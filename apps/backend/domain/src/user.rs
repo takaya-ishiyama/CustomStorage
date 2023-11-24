@@ -19,3 +19,19 @@ impl User {
         }
     }
 }
+
+// テストモジュール
+#[cfg(test)]
+mod tests {
+    // テスト対象の関数をインポート
+    use super::User;
+
+    // テスト関数
+    #[test]
+    fn test_user_true() {
+        let name = "".to_string();
+        let password = "".to_string();
+        let result = std::panic::catch_unwind(|| User::new(name, password));
+        assert!(result.is_err());
+    }
+}
