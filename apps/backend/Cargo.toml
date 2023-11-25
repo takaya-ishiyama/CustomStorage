@@ -1,7 +1,7 @@
 [workspace]
-members = ["domain"]
+members = ["domain", "infrastructure"]
 # Only check / build main crates by default (check all with `--workspace`)
-default-members = ["domain"]
+default-members = ["domain", "infrastructure"]
 # Example has been deleted, but README.md remains
 # exclude = ["examples/async-graphql"]
 resolver = "2"
