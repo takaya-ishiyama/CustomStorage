@@ -6,11 +6,14 @@ use value_object::UserValueObject;
 pub struct User(UserEntity, UserValueObject);
 
 impl User {
-    pub fn new(name: String, password: String) -> Self {
+    pub fn new(name: String, password: String) -> Result<Self, String> {
         match UserValueObject::new(name, password) {
-            Ok(value_object) => User(UserEntity::new(), value_object),
+            Ok(value_object) => Ok(User(UserEntity::new(), value_object)),
             Err(e) => panic!("入力値に誤りがある: {}", e),
         }
+    }
+    pub fn get_name(&self) -> String {
+        self.1.name.clone()
     }
 }
 

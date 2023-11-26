@@ -1,9 +1,24 @@
 version: "3.8"
 
 services:
-  postgres:
-    image: postgres
-    env_file:
-      - ./apps/postgres/.env
+  db:
+    container_name: postgres
+    build:
+        context: ./postgres
+        dockerfile: Dockerfile
+        target: "database"
     ports:
-      - "5432:5432"
+        -   "5432:5432"
+    volumes:
+      - ./database/pg-data:/var/lib/postgresql/data
+    env_file:
+      - ./postgres/.env
+    restart: always
+    healthcheck:
+        test: pg_isready -U postgres
+        interval: 10s
+        timeout: 5s
+        retries: 5
+        start_period: 10s
+volumes:
+    pg-data:

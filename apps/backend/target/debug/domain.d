@@ -1,1 +1,0 @@
-/home/takaya/MyPrograming/CustomStorage/apps/backend/target/debug/domain: /home/takaya/MyPrograming/CustomStorage/apps/backend/domain/src/lib.rs /home/takaya/MyPrograming/CustomStorage/apps/backend/domain/src/main.rs

@@ -1,9 +1,8 @@
 pub struct UserValueObject {
-    name: UserName,
+    pub name: String,
     password: UserPassword,
 }
 
-struct UserName(String);
 struct UserPassword(String);
 
 impl UserValueObject {
@@ -18,7 +17,7 @@ impl UserValueObject {
         }
 
         return Ok(UserValueObject {
-            name: UserName(name),
+            name,
             password: UserPassword(password),
         });
     }
@@ -36,7 +35,7 @@ mod tests {
         let name = "test".to_string();
         let password = "test".to_string();
         let user_value_object = UserValueObject::new(name, password).unwrap();
-        assert_eq!(user_value_object.name.0, "test");
+        assert_eq!(user_value_object.name, "test");
         assert_eq!(user_value_object.password.0, "test");
     }
 
