@@ -1,2 +1,1 @@
-mod resolver;
-mod schema;
+pub mod query;

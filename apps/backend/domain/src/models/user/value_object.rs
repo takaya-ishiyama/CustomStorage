@@ -1,9 +1,8 @@
+#[derive(Debug, Clone)]
 pub struct UserValueObject {
     pub name: String,
-    password: UserPassword,
+    password: String,
 }
-
-struct UserPassword(String);
 
 impl UserValueObject {
     pub fn new(name: String, password: String) -> Result<Self, &'static str> {
@@ -16,10 +15,7 @@ impl UserValueObject {
             return Err("Password cannot be empty");
         }
 
-        return Ok(UserValueObject {
-            name,
-            password: UserPassword(password),
-        });
+        return Ok(UserValueObject { name, password });
     }
 }
 
@@ -36,7 +32,7 @@ mod tests {
         let password = "test".to_string();
         let user_value_object = UserValueObject::new(name, password).unwrap();
         assert_eq!(user_value_object.name, "test");
-        assert_eq!(user_value_object.password.0, "test");
+        assert_eq!(user_value_object.password, "test");
     }
 
     #[test]
