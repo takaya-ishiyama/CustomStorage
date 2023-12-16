@@ -14,30 +14,32 @@ use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
+mod graphql;
+use graphql::query::QueryRoot;
 // use tower_http::trace::TraceLayer;
 
 // use http::{header, Method, Request, Response};
 // use std::convert::Infallible;
 // use tower::{Service, ServiceBuilder, ServiceExt};
 
-struct Query;
+// struct Query;
 
-#[Object]
-impl Query {
-    /// Returns the sum of a and b
-    async fn add(&self, a: i32, b: i32) -> i32 {
-        a + b
-    }
-}
+// #[Object]
+// impl Query {
+//     /// Returns the sum of a and b
+//     async fn add(&self, a: i32, b: i32) -> i32 {
+//         a + b
+//     }
+// }
 #[tokio::main]
 async fn main() {
     let server = async {
-        let schema = Schema::new(Query, EmptyMutation, EmptySubscription);
+        let schema = Schema::new(QueryRoot, EmptyMutation, EmptySubscription);
 
         let cors = CorsLayer::new().allow_methods(Any).allow_origin(Any);
 
         let app = Router::new()
-            .route("/", get(graphql_playground))
+            .route("/", get(graphql_playground).post(graphql_handler))
             .route("/plain_text", get(plain_text))
             .route("/json", get(json))
             .layer(cors)
@@ -51,15 +53,10 @@ async fn main() {
             .unwrap();
     };
 
-    // axum::Server::bind(&"0.0.0.0:8000".parse().unwrap())
-    //     .serve(app.into_make_service())
-    //     .await
-    //     .unwrap();
-
     tokio::join!(server);
 }
 
-pub type UserSchema = Schema<Query, EmptyMutation, EmptySubscription>;
+pub type UserSchema = Schema<QueryRoot, EmptyMutation, EmptySubscription>;
 
 async fn graphql_handler(schema: Extension<UserSchema>, req: Json<Request>) -> Json<Response> {
     schema.execute(req.0).await.into()

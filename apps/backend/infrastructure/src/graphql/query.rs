@@ -9,3 +9,21 @@ impl Query {
         a + b
     }
 }
+
+#[derive(SimpleObject, sqlx::FromRow)]
+struct Ping {
+    status: String,
+    code: i32,
+}
+
+pub struct QueryRoot;
+
+#[Object]
+impl QueryRoot {
+    async fn ping(&self) -> Ping {
+        Ping {
+            status: "ok".to_string(),
+            code: 200,
+        }
+    }
+}
