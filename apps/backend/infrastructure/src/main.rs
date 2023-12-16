@@ -15,27 +15,25 @@ use std::collections::HashMap;
 use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
 mod graphql;
-use graphql::query::QueryRoot;
+use graphql::query::Query;
+mod db;
+use db::persistence::postgres::Db;
 // use tower_http::trace::TraceLayer;
 
 // use http::{header, Method, Request, Response};
 // use std::convert::Infallible;
 // use tower::{Service, ServiceBuilder, ServiceExt};
 
-// struct Query;
-
-// #[Object]
-// impl Query {
-//     /// Returns the sum of a and b
-//     async fn add(&self, a: i32, b: i32) -> i32 {
-//         a + b
-//     }
-// }
 #[tokio::main]
 async fn main() {
     let server = async {
-        let schema = Schema::new(QueryRoot, EmptyMutation, EmptySubscription);
+        let db_pool = Db::new().await;
 
+        let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
+            .data(db_pool)
+            .finish();
+
+        // FIXME: ANYなおす
         let cors = CorsLayer::new().allow_methods(Any).allow_origin(Any);
 
         let app = Router::new()
@@ -56,7 +54,7 @@ async fn main() {
     tokio::join!(server);
 }
 
-pub type UserSchema = Schema<QueryRoot, EmptyMutation, EmptySubscription>;
+pub type UserSchema = Schema<Query, EmptyMutation, EmptySubscription>;
 
 async fn graphql_handler(schema: Extension<UserSchema>, req: Json<Request>) -> Json<Response> {
     schema.execute(req.0).await.into()
