@@ -1,1 +1,2 @@
 apps/backend/target/*
+database/pg-data/
