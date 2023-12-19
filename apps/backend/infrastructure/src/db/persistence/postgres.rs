@@ -13,11 +13,7 @@ impl Db {
 
         let pool = PgPoolOptions::new()
             .max_connections(5)
-            .connect(
-                // &env::var("DATABASE_URL").unwrap_or_else(|_| panic!("DATABASE_URL must be set!")),
-                database_url.as_str(),
-                // "postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:5432/$DATABASE_NAME",
-            )
+            .connect(database_url.as_str())
             .await
             .unwrap_or_else(|_| {
                 panic!("Cannot connect to the database. Please check your configuration.")

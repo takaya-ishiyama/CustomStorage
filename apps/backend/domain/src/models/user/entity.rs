@@ -1,18 +1,22 @@
 use uuid::Uuid;
 
-// #[derive(Debug, Clone)]
-// pub struct UserEntity {
-//     id: Uuid,
-// }
+#[derive(Debug, Clone)]
+pub struct UserEntity {
+    pub id: String,
+}
 
-// impl UserEntity {
-//     pub fn new() -> Self {
-//         let id = Uuid::new_v4();
-//         UserEntity { id }
-//     }
-// }
+impl UserEntity {
+    pub fn new() -> Self {
+        let id = Uuid::new_v4().to_string();
+        UserEntity { id }
+    }
 
-// // テストモジュール
+    pub fn get_user_id(&self) -> Result<String, String> {
+        Ok(self.id.clone())
+    }
+}
+
+// テストモジュール
 // #[cfg(test)]
 // mod tests {
 //     // テスト対象の関数をインポート

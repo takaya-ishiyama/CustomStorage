@@ -1,23 +1,27 @@
-// mod entity;
-// mod value_object;
+mod entity;
+mod value_object;
 
-// // use entity::UserEntity;
-// use value_object::UserValueObject;
+use entity::UserEntity;
+use value_object::UserValueObject;
 
-// #[derive(Debug, Clone)]
-// pub struct User(UserEntity, UserValueObject);
+#[derive(Debug, Clone)]
+pub struct User(pub UserEntity, pub UserValueObject);
 
-// impl User {
-//     pub fn new(name: String, password: String) -> Result<Self, String> {
-//         match UserValueObject::new(name, password) {
-//             Ok(value_object) => Ok(User(UserEntity::new(), value_object)),
-//             Err(e) => panic!("入力値に誤りがある: {}", e),
-//         }
-//     }
-//     pub fn get_name(&self) -> String {
-//         self.1.name.clone()
-//     }
-// }
+impl User {
+    pub fn new(name: String, password: String) -> Result<Self, String> {
+        match UserValueObject::new(name, password) {
+            Ok(value_object) => Ok(User(UserEntity::new(), value_object)),
+            Err(e) => panic!("入力値に誤りがある: {}", e),
+        }
+    }
+
+    pub fn get_user(id: String, name: String, password: String) -> Result<Self, String> {
+        Ok(User(
+            UserEntity { id },
+            UserValueObject::new(name, password).unwrap(),
+        ))
+    }
+}
 
 // // テストモジュール
 // #[cfg(test)]

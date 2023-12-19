@@ -18,6 +18,7 @@ mod graphql;
 use graphql::query::Query;
 mod db;
 use db::persistence::postgres::Db;
+mod auth;
 // use tower_http::trace::TraceLayer;
 
 // use http::{header, Method, Request, Response};
@@ -27,10 +28,11 @@ use db::persistence::postgres::Db;
 #[tokio::main]
 async fn main() {
     let server = async {
-        let db_pool = Db::new().await;
+        // let db_pool = Db::new().await;
 
         let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
-            .data(db_pool)
+            // .middleware(AuthMiddleware)
+            .data(Db::new().await)
             .finish();
 
         // FIXME: ANYなおす

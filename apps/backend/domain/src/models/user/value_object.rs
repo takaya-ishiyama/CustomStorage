@@ -1,7 +1,7 @@
 #[derive(Debug, Clone)]
 pub struct UserValueObject {
     pub name: String,
-    password: String,
+    pub password: String,
 }
 
 impl UserValueObject {
