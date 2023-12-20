@@ -1,13 +1,16 @@
+use async_trait::async_trait;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::{Pool, Postgres};
-use std::env;
 use std::sync::Arc;
+
+use domain::infrastructure::interface::db::db_interface::DbTrait;
 
 #[derive(Clone)]
 pub struct Db(pub(crate) Arc<Pool<Postgres>>);
 
-impl Db {
-    pub async fn new() -> Db {
+#[async_trait]
+impl DbTrait for Db {
+    async fn new() -> Db {
         dotenv::dotenv().ok();
         let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL is not set");
 

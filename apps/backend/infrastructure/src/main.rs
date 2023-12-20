@@ -7,6 +7,7 @@ use async_graphql::{
 use axum::extract::{Json, Path};
 use axum::response::IntoResponse;
 use axum::{body::Body, extract::Extension, response::Html, routing::get, Router};
+use domain::infrastructure::interface::db::db_interface::new_db;
 // use axum_login::axum::Extension;
 // use bytes::Bytes;
 // use serde::Deserialize;
@@ -32,7 +33,7 @@ async fn main() {
 
         let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
             // .middleware(AuthMiddleware)
-            .data(Db::new().await)
+            .data(new_db::<Db>().await)
             .finish();
 
         // FIXME: ANYなおす

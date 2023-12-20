@@ -8,6 +8,8 @@ edition = "2021"
 [dependencies]
 axum = { version = "0.6.20" }
 async-graphql = "6.0.11"
+sqlx = { version = "0.7.3", features = ["postgres", "runtime-tokio"] }
+async-trait = "0.1.74"
 
 
 [dependencies.uuid]
@@ -17,3 +19,7 @@ features = [
     "fast-rng",          # Use a faster (but still sufficiently random) RNG
     "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
 ]
+
+
+[dev-dependencies]
+tokio = { version = "1.35.1" }

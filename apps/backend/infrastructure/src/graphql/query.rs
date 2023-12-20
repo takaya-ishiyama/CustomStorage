@@ -19,35 +19,6 @@ struct User {
     password: String,
 }
 
-// pub struct NewtypeDomainUser(DomainUser);
-
-// impl FromRow<'_, PgRow> for NewtypeDomainUser {
-//     fn from_row(row: &PgRow) -> sqlx::Result<Self> {
-//         let id: String = row.try_get("id")?;
-//         let name: String = row.try_get("name")?;
-//         let password: String = row.try_get("password")?;
-
-//         Ok(NewtypeDomainUser(
-//             DomainUser::get_user(id, name, password).unwrap(),
-//         ))
-//     }
-// }
-
-#[derive(Default)]
-pub struct UserQuery;
-
-#[Object]
-impl UserQuery {
-    async fn get_user(
-        &self,
-        ctx: &Context<'_>,
-        // #[graphql(desc = "id of the post")] id: String,
-    ) -> Result<&String> {
-        // user_service.get_user(id).await.map_err(Into::into);
-        unimplemented!()
-    }
-}
-
 pub struct Query;
 
 #[Object]
@@ -71,8 +42,73 @@ impl Query {
         Ok(users)
     }
 }
-// Ok(User {
-//     id: users[0].0.id.to_string(),
-//     name: users[0].0 .1.name.to_string(),
-//     password: users[0].0 .1.password.to_string(),
-// })
+
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use mockall::predicate::*;
+//     use mockall::*;
+
+//     #[tokio::test]
+//     async fn test_database() {
+//         // モックの定義
+//         mock! {
+//             DbConn {}
+//             impl DbConn {
+//                 async fn get_user(&self, id: i32) -> User;
+//             }
+//         }
+
+//         let mut db = MockDbConn::new();
+
+//         // モックの振る舞いを定義
+//         db.expect_get_user().with(eq(1)).returning(|_| User {
+//             id: 1,
+//             name: "John".into(),
+//         });
+
+//         // テスト対象のコード
+//         let user = get_user_from_db(1, &db).await;
+
+//         assert_eq!(user.name, "John");
+//     }
+
+//     #[tokio::test]
+//     async fn my_async_test() {
+//         // Asynchronous test code goes here
+//     }
+
+//     #[test]
+//     fn my_sync_test() {
+//         // Synchronous test code goes here
+//     }
+// }
+
+// #[derive(Default)]
+// pub struct UserQuery;
+
+// #[Object]
+// impl UserQuery {
+//     async fn get_user(
+//         &self,
+//         ctx: &Context<'_>,
+//         // #[graphql(desc = "id of the post")] id: String,
+//     ) -> Result<&String> {
+//         // user_service.get_user(id).await.map_err(Into::into);
+//         unimplemented!()
+//     }
+// }
+
+// pub struct NewtypeDomainUser(DomainUser);
+
+// impl FromRow<'_, PgRow> for NewtypeDomainUser {
+//     fn from_row(row: &PgRow) -> sqlx::Result<Self> {
+//         let id: String = row.try_get("id")?;
+//         let name: String = row.try_get("name")?;
+//         let password: String = row.try_get("password")?;
+
+//         Ok(NewtypeDomainUser(
+//             DomainUser::get_user(id, name, password).unwrap(),
+//         ))
+//     }
+// }
