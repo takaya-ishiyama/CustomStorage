@@ -15,7 +15,7 @@ struct Ping {
 #[derive(SimpleObject, FromRow)]
 struct User {
     id: String,
-    name: String,
+    username: String,
     password: String,
 }
 
