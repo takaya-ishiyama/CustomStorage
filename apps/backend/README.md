@@ -2,7 +2,7 @@
 ## rule
 - getterは必要最低限にする
 - getterで取得した値でロジックを書かない
- - https://zenn.dev/tattu/articles/ee3849159c0888#setter%2Fgetter%E3%81%8C%E4%B8%8D%E8%A6%81%E3%81%AA%E7%90%86%E7%94%B1
+    - https://zenn.dev/tattu/articles/ee3849159c0888#setter%2Fgetter%E3%81%8C%E4%B8%8D%E8%A6%81%E3%81%AA%E7%90%86%E7%94%B1
 - クリーンアーキテクチャを採用
 - traitとtrait境界はクリーンアーキテクチャに準ずる形とする
 - しかしトレイト境界を使うための構造体(型)のみイリーガルなレイヤーから受け取るのはアリとする
