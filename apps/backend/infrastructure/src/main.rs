@@ -22,15 +22,16 @@ use domain::infrastructure::interface::db::db_interface::new_db;
 #[tokio::main]
 async fn main() {
     let server = async {
-        // let db_pool = Db::new().await;
+        // FIXME: ANYなおす
+        let cors = CorsLayer::new()
+            // .allow_headers(vec![ContentType::json()])
+            .allow_headers(Any)
+            .allow_methods(Any)
+            .allow_origin(Any);
 
         let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
-            // .middleware(AuthMiddleware)
             .data(new_db::<Db>().await)
             .finish();
-
-        // FIXME: ANYなおす
-        let cors = CorsLayer::new().allow_methods(Any).allow_origin(Any);
 
         let app = Router::new()
             .route("/", get(graphql_playground).post(graphql_handler))
