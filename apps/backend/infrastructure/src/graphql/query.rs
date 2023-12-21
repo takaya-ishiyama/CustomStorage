@@ -1,10 +1,7 @@
-// use async_graphql::{Context, Object, Result, Scalar, SimpleObject};
 use async_graphql::*;
-use sqlx::{postgres::PgRow, Acquire, FromRow, Row};
+use sqlx::{Acquire, FromRow};
 
 use crate::db::persistence::postgres::Db;
-use domain::models::user::User as DomainUser;
-use uuid::Uuid;
 
 #[derive(SimpleObject, sqlx::FromRow)]
 struct Ping {
