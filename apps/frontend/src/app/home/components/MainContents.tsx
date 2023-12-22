@@ -5,9 +5,17 @@ import React from "react";
 export const MainContents = () => {
 	const { data, isLoading } = useUserQuery({});
 
+	React.useEffect(() => {
+		console.log(data);
+	}, [data]);
+
+	if (isLoading) {
+		return <div>loading...</div>;
+	}
+
 	return (
 		<div>
-			<Button onClick={() => {}}>aaa</Button>
+			<Button onClick={() => {}}>{data?.username}</Button>
 		</div>
 	);
 };

@@ -1,3 +1,4 @@
 apps/backend/target/*
 database/pg-data/
 .env
+.env.local

@@ -1,8 +1,9 @@
-import { UseQueryOptions, useQuery } from "react-query";
-import { BACKEND_URI } from "../URI";
+import { UseQueryOptions, UseQueryResult, useQuery } from "react-query";
+
+type UseUserQuery = (props: Props) => UseQueryResult<User, string[]>;
 
 type Props = {
-	options?: UseQueryOptions<User, undefined, undefined, string[]>;
+	options?: Omit<UseQueryOptions<User, string[], User>, "queryKey">;
 };
 
 type User = {
@@ -10,7 +11,7 @@ type User = {
 	username: string;
 };
 
-export const useUserQuery = ({ options }: Props) => {
+export const useUserQuery: UseUserQuery = ({ options }) => {
 	const query = {
 		query: `
 	  query {
@@ -21,19 +22,20 @@ export const useUserQuery = ({ options }: Props) => {
 	  }
 	`,
 	};
-	return useQuery(
+	return useQuery<User, string[]>(
 		["user"],
 		async () => {
-			if (BACKEND_URI === undefined)
-				throw new Error("BACKEND_URI is undefined");
-			const res = await fetch(BACKEND_URI, {
+			// FIXME: envから取得できない
+			const res = await fetch("http://localhost:8000/graphql", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(query),
 			});
-
+			if (!res.ok) {
+				throw new Error(`HTTP error! Status: ${res.status}`);
+			}
 			const { data } = await res.json();
-			return data.user as User;
+			return data.user;
 		},
 		options,
 	);
