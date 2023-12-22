@@ -1,7 +1,5 @@
 "use client";
 
-import { client } from "@/infrastructure/apollo";
-import { ApolloProvider } from "@apollo/client";
 import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 
@@ -12,11 +10,9 @@ export default function MyApp() {
 	};
 	return (
 		<>
-			<ApolloProvider client={client}>
-				<div>
-					<Button variant="contained" onClick={handleClickGoHomePage} />
-				</div>
-			</ApolloProvider>
+			<div>
+				<Button variant="contained" onClick={handleClickGoHomePage} />
+			</div>
 		</>
 	);
 }

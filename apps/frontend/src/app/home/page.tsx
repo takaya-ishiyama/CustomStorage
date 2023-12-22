@@ -2,12 +2,16 @@
 
 import React from "react";
 import { MainContents } from "./components/MainContents";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ProviderWrapper } from "../hooks";
+
+const queryClient = new QueryClient();
 
 const page = () => {
 	return (
-		<div>
+		<ProviderWrapper>
 			<MainContents />
-		</div>
+		</ProviderWrapper>
 	);
 };
 

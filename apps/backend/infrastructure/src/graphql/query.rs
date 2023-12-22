@@ -27,7 +27,7 @@ impl Query {
         }
     }
 
-    async fn users<'ctx>(&self, ctx: &Context<'ctx>) -> Result<User> {
+    async fn user<'ctx>(&self, ctx: &Context<'ctx>) -> Result<User> {
         let mut pool = ctx.data::<Db>()?.0.acquire().await?;
         let conn = pool.acquire().await?;
         conn.begin().await?;
