@@ -1,24 +1,19 @@
-mod entity;
-mod value_object;
+pub mod entity;
+pub mod value_object;
 
 use entity::UserEntity;
 use value_object::UserValueObject;
 
+use super::interface::user_interface::UserTrait;
+
 #[derive(Debug, Clone)]
 pub struct User(pub UserEntity, pub UserValueObject);
 
-impl User {
-    pub fn new(name: String, password: String) -> Result<Self, String> {
-        match UserValueObject::new(name, password) {
-            Ok(value_object) => Ok(User(UserEntity::new(), value_object)),
-            Err(e) => panic!("入力値に誤りがある: {}", e),
-        }
-    }
-
-    pub fn get_user(id: String, name: String, password: String) -> Result<Self, String> {
+impl UserTrait for User {
+    fn new(id: String, username: String, password: String) -> Result<Self, String> {
         Ok(User(
-            UserEntity { id },
-            UserValueObject::new(name, password).unwrap(),
+            UserEntity::new(id.to_string()).unwrap(),
+            UserValueObject::new(username, password).unwrap(),
         ))
     }
 }

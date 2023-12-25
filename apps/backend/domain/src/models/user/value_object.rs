@@ -11,10 +11,6 @@ impl UserValueObject {
             return Err("Name cannot be empty");
         }
 
-        if password.is_empty() {
-            return Err("Password cannot be empty");
-        }
-
         return Ok(UserValueObject { username, password });
     }
 }

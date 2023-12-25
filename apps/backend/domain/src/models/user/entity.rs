@@ -6,13 +6,11 @@ pub struct UserEntity {
 }
 
 impl UserEntity {
-    pub fn new() -> Self {
-        let id = Uuid::new_v4().to_string();
-        UserEntity { id }
-    }
-
-    pub fn get_user_id(&self) -> Result<String, String> {
-        Ok(self.id.clone())
+    pub fn new(id: String) -> Result<Self, &'static str> {
+        if id.is_empty() {
+            return Err("ID cannot be empty");
+        }
+        return Ok(UserEntity { id });
     }
 }
 
