@@ -15,20 +15,3 @@ pub trait Repository<T> {
     // async fn upsert(&self, t: T) -> T;
     // async fn delete(&self, id: i32) -> T;
 }
-
-// #[async_trait]
-// trait RepoTrait {
-//     async fn get_connection(&mut self) -> Result<&mut PgConnection>;
-// }
-
-// pub struct Repo {
-//     pool: PoolConnection<Postgres>,
-// }
-
-// #[async_trait]
-// impl RepoTrait for Repo {
-//     async fn get_connection(&mut self) -> Result<&mut PgConnection> {
-//         let conn = self.pool.acquire().await?;
-//         Ok(conn)
-//     }
-// }
