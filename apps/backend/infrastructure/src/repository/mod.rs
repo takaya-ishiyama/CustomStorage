@@ -1,15 +1,14 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use domain::models::user::User as DomainUser;
-use sqlx::{pool::PoolConnection, Acquire, PgConnection, Pool, Postgres, Result};
+use sqlx::{Pool, Postgres};
 
 pub mod user_repository;
 
 #[async_trait]
 pub trait Repository<T> {
     fn new(db: Arc<Pool<Postgres>>) -> Self;
-    async fn find_one(&self, id: i32) -> T;
+    async fn find_one(&self, id: String) -> T;
     // async fn find_all(&self) -> Vec<T>;
     // async fn save(&self, t: T) -> T;
     // async fn update(&self, t: T) -> T;

@@ -2,8 +2,7 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use domain::models::{interface::user_interface::new_user, user::User};
-use sqlx::{pool::PoolConnection, prelude::FromRow, Acquire, PgConnection, Pool, Postgres, Row};
-use std::cell::Cell;
+use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
 
 use super::Repository;
 
@@ -24,7 +23,7 @@ impl Repository<User> for UserRepository {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
         Self { db }
     }
-    async fn find_one(&self, id: i32) -> User {
+    async fn find_one(&self, id: String) -> User {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         conn.begin().await.unwrap();
