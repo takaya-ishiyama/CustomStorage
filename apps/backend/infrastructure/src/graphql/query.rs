@@ -34,11 +34,11 @@ impl Query {
     async fn user<'ctx>(
         &self,
         ctx: &Context<'ctx>,
-        // #[graphql(desc = "Id of object")] id: String,
+        #[graphql(desc = "Id of object")] id: String,
     ) -> Result<User> {
         let db = ctx.data::<Db>().unwrap().0.clone();
         let repo = UserRepository::new(db);
-        let user = repo.find_one("1".to_string()).await;
+        let user = repo.find_one(id).await;
         let user = User {
             id: user.0.id,
             username: user.1.username,

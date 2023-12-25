@@ -3,7 +3,3 @@ pub trait UserTrait {
     where
         Self: Sized;
 }
-
-pub fn new_user<T: UserTrait>(id: String, username: String, password: String) -> T {
-    T::new(id, username, password).unwrap()
-}

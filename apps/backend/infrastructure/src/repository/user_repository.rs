@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use domain::models::{interface::user_interface::new_user, user::User};
+use domain::models::{interface::user_interface::UserTrait, user::User};
 use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
 
 use super::Repository;
@@ -11,7 +11,7 @@ pub struct UserRepository {
 }
 
 #[derive(FromRow)]
-struct QueryUser {
+struct FindOne {
     id: String,
     username: String,
     #[sqlx(skip)]
@@ -27,11 +27,11 @@ impl Repository<User> for UserRepository {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         conn.begin().await.unwrap();
-        let user = sqlx::query_as::<_, QueryUser>("SELECT * FROM users")
+        let user = sqlx::query_as!(FindOne, "SELECT * FROM users WHERE id = $1", id)
             .fetch_one(conn)
             .await
             .unwrap();
-        return new_user::<User>(user.id, user.username, user.password);
+        return User::new(user.id, user.username, user.password).unwrap();
     }
 
     // fn find_all(&self) -> Vec<DomainUser> {
