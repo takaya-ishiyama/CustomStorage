@@ -1,5 +1,3 @@
-use uuid::Uuid;
-
 #[derive(Debug, Clone)]
 pub struct UserEntity {
     pub id: String,

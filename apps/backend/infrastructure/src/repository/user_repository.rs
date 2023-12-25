@@ -7,6 +7,7 @@ use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
 use super::Repository;
 
 pub struct UserRepository {
+    //　TODO: ジェネリクスなconnectionを受け取るようにする
     db: Arc<Pool<Postgres>>,
 }
 
@@ -27,7 +28,8 @@ impl Repository<User> for UserRepository {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         conn.begin().await.unwrap();
-        let user = sqlx::query_as!(FindOne, "SELECT * FROM users WHERE id = $1", id)
+        let user = sqlx::query_as::<_, FindOne>("SELECT * FROM users WHERE id = $1")
+            .bind(id)
             .fetch_one(conn)
             .await
             .unwrap();
