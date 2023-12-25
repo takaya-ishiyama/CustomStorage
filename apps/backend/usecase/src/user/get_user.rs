@@ -1,7 +1,15 @@
-// use domain::models::user::User;
+use domain::models::user::User;
 
-// impl Usecase for User {
-//     async fn get_user(&self, id: String) {
-//         println!("get_user: {}", id);
+// pub struct UserUsecaseImpl {
+//     repo: UserRepository,
+// }
+
+// impl UserUsecaseImpl {
+//     pub async fn new(repo: UserRepository) -> Self {
+//         Self { repo }
+//     }
+
+//     pub async fn get_user(&self, id: String) -> User {
+//         self.repo.find_one(id).await.unwrap()
 //     }
 // }

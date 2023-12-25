@@ -1,17 +1,8 @@
-use async_graphql::*;
-use domain::models::user::User as DomainUser;
-use sqlx::{Acquire, FromRow};
-
 use crate::{
     db::persistence::postgres::Db,
     repository::{user_repository::UserRepository, Repository},
 };
-
-#[derive(SimpleObject, sqlx::FromRow)]
-struct Ping {
-    status: String,
-    code: i32,
-}
+use async_graphql::*;
 
 #[derive(SimpleObject)]
 struct User {
@@ -24,13 +15,6 @@ pub struct Query;
 
 #[Object]
 impl Query {
-    async fn ping(&self) -> Ping {
-        Ping {
-            status: "ok".to_string(),
-            code: 200,
-        }
-    }
-
     async fn user<'ctx>(
         &self,
         ctx: &Context<'ctx>,
@@ -38,7 +22,7 @@ impl Query {
     ) -> Result<User> {
         let db = ctx.data::<Db>().unwrap().0.clone();
         let repo = UserRepository::new(db);
-        let user = repo.find_one(id).await;
+        let user = repo.find_by_id(id).await;
         let user = User {
             id: user.0.id,
             username: user.1.username,

@@ -8,7 +8,7 @@ pub mod user_repository;
 #[async_trait]
 pub trait Repository<T> {
     fn new(db: Arc<Pool<Postgres>>) -> Self;
-    async fn find_one(&self, id: String) -> T;
+    async fn find_by_id(&self, id: String) -> T;
     // async fn find_all(&self) -> Vec<T>;
     // async fn save(&self, t: T) -> T;
     // async fn update(&self, t: T) -> T;

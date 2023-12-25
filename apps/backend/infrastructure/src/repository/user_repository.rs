@@ -23,7 +23,7 @@ impl Repository<User> for UserRepository {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
         Self { db }
     }
-    async fn find_one(&self, id: String) -> User {
+    async fn find_by_id(&self, id: String) -> User {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         conn.begin().await.unwrap();
@@ -34,43 +34,14 @@ impl Repository<User> for UserRepository {
         return User::new(user.id, user.username, user.password).unwrap();
     }
 
-    // fn find_all(&self) -> Vec<DomainUser> {
-    //     let users = sqlx::query_as::<_, DomainUser>("SELECT * FROM users")
-    //         .fetch_all(self.conn)
+    // async fn find_all(&self) -> Vec<User> {
+    //     let mut pool = self.db.acquire().await.unwrap();
+    //     let conn = pool.acquire().await.unwrap();
+    //     conn.begin().await.unwrap();
+    //     let users = sqlx::query_as!(FindOne, "SELECT * FROM users")
+    //         .fetch_all(conn)
     //         .await
     //         .unwrap();
-    //     users
-    // }
-
-    // fn save(&self, t: DomainUser) -> DomainUser {
-    //     let user = sqlx::query_as::<_, DomainUser>("SELECT * FROM users")
-    //         .fetch_one(self.conn)
-    //         .await
-    //         .unwrap();
-    //     user
-    // }
-
-    // fn update(&self, t: DomainUser) -> DomainUser {
-    //     let user = sqlx::query_as::<_, DomainUser>("SELECT * FROM users")
-    //         .fetch_one(self.conn)
-    //         .await
-    //         .unwrap();
-    //     user
-    // }
-
-    // fn upsert(&self, t: DomainUser) -> DomainUser {
-    //     let user = sqlx::query_as::<_, DomainUser>("SELECT * FROM users")
-    //         .fetch_one(self.conn)
-    //         .await
-    //         .unwrap();
-    //     user
-    // }
-
-    // fn delete(&self, id: i32) -> DomainUser {
-    //     let user = sqlx::query_as::<_, DomainUser>("SELECT * FROM users")
-    //         .fetch_one(self.conn)
-    //         .await
-    //         .unwrap();
-    //     user
+    //     return users;
     // }
 }
