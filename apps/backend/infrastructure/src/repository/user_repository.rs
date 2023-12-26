@@ -1,13 +1,13 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use domain::models::{interface::user_interface::UserTrait, user::User};
+use domain::{
+    infrastructure::interface::repository::repository_interface::Repository,
+    models::{interface::user_interface::UserTrait, user::User},
+};
 use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
 
-use super::Repository;
-
 pub struct UserRepository {
-    //　TODO: ジェネリクスなconnectionを受け取るようにする
     db: Arc<Pool<Postgres>>,
 }
 
