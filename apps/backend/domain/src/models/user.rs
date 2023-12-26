@@ -12,7 +12,7 @@ pub struct User(pub UserEntity, pub UserValueObject);
 impl UserTrait for User {
     fn new(id: String, username: String, password: String) -> Result<Self, String> {
         Ok(User(
-            UserEntity::new(id.to_string()).unwrap(),
+            UserEntity::new(id).unwrap(),
             UserValueObject::new(username, password).unwrap(),
         ))
     }

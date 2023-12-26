@@ -19,6 +19,14 @@ struct FindOne {
     password: String,
 }
 
+#[derive(FromRow)]
+struct Create {
+    id: String,
+    username: String,
+    #[sqlx(skip)]
+    password: String,
+}
+
 #[async_trait]
 impl Repository<User> for UserRepository {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
@@ -34,6 +42,23 @@ impl Repository<User> for UserRepository {
             .await
             .unwrap();
         return User::new(user.id, user.username, user.password).unwrap();
+    }
+
+    async fn create(&self, user: User) -> User {
+        let mut pool = self.db.acquire().await.unwrap();
+        let conn = pool.acquire().await.unwrap();
+        conn.begin().await.unwrap();
+
+        let create_user = sqlx::query_as::<_, Create>(
+            "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *",
+        )
+        .bind(user.1.username)
+        .bind(user.1.password)
+        .fetch_one(conn)
+        .await
+        .unwrap();
+
+        return User::new(create_user.id, create_user.username, create_user.password).unwrap();
     }
 
     // async fn find_all(&self) -> Vec<User> {

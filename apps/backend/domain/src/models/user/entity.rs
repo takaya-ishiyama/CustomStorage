@@ -5,9 +5,9 @@ pub struct UserEntity {
 
 impl UserEntity {
     pub fn new(id: String) -> Result<Self, &'static str> {
-        if id.is_empty() {
-            return Err("ID cannot be empty");
-        }
+        // if id.is_empty() {
+        //     return Err("ID cannot be empty");
+        // }
         return Ok(UserEntity { id });
     }
 }

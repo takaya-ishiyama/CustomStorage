@@ -6,9 +6,8 @@ mod repository;
 use std::net::SocketAddr;
 
 use async_graphql::http::GraphQLPlaygroundConfig;
-use async_graphql::{
-    http::playground_source, EmptyMutation, EmptySubscription, Request, Response, Schema,
-};
+use async_graphql::{http::playground_source, EmptySubscription, Request, Response, Schema};
+use graphql::mutation::Mutation;
 use graphql::query::Query;
 
 use axum::extract::Json;
@@ -30,7 +29,7 @@ async fn main() {
             .allow_methods(Any)
             .allow_origin(Any);
 
-        let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
+        let schema = Schema::build(Query, Mutation, EmptySubscription)
             .data(new_db::<Db>().await)
             .finish();
 
@@ -51,7 +50,7 @@ async fn main() {
     tokio::join!(server);
 }
 
-pub type MySchema = Schema<Query, EmptyMutation, EmptySubscription>;
+pub type MySchema = Schema<Query, Mutation, EmptySubscription>;
 
 async fn graphql_handler(schema: Extension<MySchema>, req: Json<Request>) -> Json<Response> {
     schema.execute(req.0).await.into()
