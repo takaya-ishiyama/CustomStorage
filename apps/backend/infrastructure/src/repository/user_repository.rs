@@ -2,7 +2,9 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use domain::{
-    infrastructure::interface::repository::repository_interface::Repository,
+    infrastructure::interface::repository::{
+        repository_interface::Repository, user_repository_interface::UserRepositoryTrait,
+    },
     models::{interface::user_interface::UserTrait, user::User},
 };
 use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
@@ -28,6 +30,7 @@ struct Create {
 }
 
 #[async_trait]
+// TODO: traitを使うようにする
 impl Repository<User> for UserRepository {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
         Self { db }
@@ -41,7 +44,7 @@ impl Repository<User> for UserRepository {
             .fetch_one(conn)
             .await
             .unwrap();
-        return User::new(user.id, user.username, user.password).unwrap();
+        return UserTrait::new(user.id, user.username, user.password).unwrap();
     }
 
     async fn create(&self, user: User) -> User {

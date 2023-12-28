@@ -1297,6 +1297,7 @@ dependencies = [
  "bytes",
  "domain",
  "dotenv",
+ "futures-util",
  "hyper",
  "mockall",
  "serde",
@@ -2937,6 +2938,9 @@ checksum = "daf8dba3b7eb870caf1ddeed7bc9d2a049f3cfdfae7cb521b087cc33ae4c49da"
 [[package]]
 name = "usecase"
 version = "0.1.0"
+dependencies = [
+ "domain",
+]
 
 [[package]]
 name = "utf8parse"

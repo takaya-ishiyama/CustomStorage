@@ -8,12 +8,14 @@ use std::net::SocketAddr;
 use async_graphql::http::GraphQLPlaygroundConfig;
 use async_graphql::{http::playground_source, EmptySubscription, Request, Response, Schema};
 use graphql::mutation::Mutation;
-use graphql::query::Query;
+use graphql::query::{Query, Token};
 
 use axum::extract::Json;
 use axum::response::IntoResponse;
 use axum::{extract::Extension, response::Html, routing::get, routing::post, Router};
 
+use graphql::subscription::SubscriptionRoot;
+use hyper::HeaderMap;
 use tower_http::cors::{Any, CorsLayer};
 
 use db::persistence::postgres::Db;
@@ -50,7 +52,13 @@ async fn main() {
     tokio::join!(server);
 }
 
-pub type MySchema = Schema<Query, Mutation, EmptySubscription>;
+fn get_token_from_headers(headers: &HeaderMap) -> Option<Token> {
+    headers
+        .get("Token")
+        .and_then(|value| value.to_str().map(|s| Token(s.to_string())).ok())
+}
+
+type MySchema = Schema<Query, Mutation, SubscriptionRoot>;
 
 async fn graphql_handler(schema: Extension<MySchema>, req: Json<Request>) -> Json<Response> {
     schema.execute(req.0).await.into()

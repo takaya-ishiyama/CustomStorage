@@ -11,15 +11,20 @@ struct GetUser {
 
 pub struct Query;
 
+pub struct Token(pub String);
+
 #[Object]
 impl Query {
+    async fn current_token<'a>(&self, ctx: &'a Context<'_>) -> Option<&'a str> {
+        ctx.data_opt::<Token>().map(|token| token.0.as_str())
+    }
     async fn get_user<'ctx>(
         &self,
         ctx: &Context<'ctx>,
         #[graphql(desc = "Id of object")] id: String,
     ) -> Result<GetUser> {
         let db = ctx.data::<Db>().unwrap().0.clone();
-        let repo: UserRepository = Repository::new(db);
+        let repo = UserRepository::new(db);
         let user = repo.find_by_id(id).await;
         let user = GetUser {
             id: user.0.id,
