@@ -1,6 +1,6 @@
 use async_graphql::{Context, Object, SimpleObject};
 use domain::{
-    infrastructure::interface::repository::repository_interface::Repository,
+    infrastructure::interface::repository::user_repository_interface::UserRepositoryTrait,
     models::{interface::user_interface::UserTrait, user::User},
 };
 
@@ -24,7 +24,7 @@ impl Mutation {
         #[graphql(desc = "password of object")] password: String,
     ) -> Result<CreateUser, String> {
         let db = ctx.data::<Db>().unwrap().0.clone();
-        let repo: UserRepository = Repository::new(db);
+        let repo = UserRepository::new(db);
 
         let user = User::new("".to_string(), username, password).unwrap();
 

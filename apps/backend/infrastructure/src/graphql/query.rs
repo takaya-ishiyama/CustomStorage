@@ -1,6 +1,8 @@
 use crate::{db::persistence::postgres::Db, repository::user_repository::UserRepository};
 use async_graphql::*;
-use domain::infrastructure::interface::repository::repository_interface::Repository;
+use domain::infrastructure::interface::repository::{
+    repository_interface::Repository, user_repository_interface::UserRepositoryTrait,
+};
 
 #[derive(SimpleObject)]
 struct GetUser {

@@ -31,7 +31,7 @@ struct Create {
 
 #[async_trait]
 // TODO: traitを使うようにする
-impl Repository<User> for UserRepository {
+impl UserRepositoryTrait for UserRepository {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
         Self { db }
     }
