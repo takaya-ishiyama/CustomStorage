@@ -6,7 +6,7 @@ export const MainContents = () => {
 	const { data, isLoading } = useUserQuery({});
 
 	React.useEffect(() => {
-		console.log(data);
+		console.log("aaaa", data);
 	}, [data]);
 
 	if (isLoading) {
@@ -18,15 +18,4 @@ export const MainContents = () => {
 			<Button onClick={() => {}}>{data?.username}</Button>
 		</div>
 	);
-};
-
-const query = {
-	query: `
-	  query {
-		users {
-		  id
-		  username  
-		}
-	  }  
-	`,
 };

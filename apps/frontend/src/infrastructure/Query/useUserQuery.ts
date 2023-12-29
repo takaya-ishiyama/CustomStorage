@@ -15,7 +15,7 @@ export const useUserQuery: UseUserQuery = ({ options }) => {
 	const query = {
 		query: `
 	  query {
-		user {
+		getUser(id: "17b5ac0c-1429-469a-8522-053f7bf0f80d") {
 		  id
 		  username
 		}

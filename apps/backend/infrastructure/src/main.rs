@@ -10,7 +10,7 @@ use async_graphql::{http::playground_source, EmptySubscription, Request, Respons
 use graphql::mutation::Mutation;
 use graphql::query::{Query, Token};
 
-use axum::extract::Json;
+use axum::extract::{Json, State};
 use axum::response::IntoResponse;
 use axum::{extract::Extension, response::Html, routing::get, routing::post, Router};
 
@@ -58,10 +58,18 @@ fn get_token_from_headers(headers: &HeaderMap) -> Option<Token> {
         .and_then(|value| value.to_str().map(|s| Token(s.to_string())).ok())
 }
 
-type MySchema = Schema<Query, Mutation, SubscriptionRoot>;
+type MySchema = Schema<Query, Mutation, EmptySubscription>;
 
-async fn graphql_handler(schema: Extension<MySchema>, req: Json<Request>) -> Json<Response> {
-    schema.execute(req.0).await.into()
+async fn graphql_handler(
+    schema: Extension<MySchema>,
+    headers: HeaderMap,
+    req: Json<Request>,
+) -> Json<Response> {
+    let mut req = req.0;
+    if let Some(token) = get_token_from_headers(&headers) {
+        req = req.data(token);
+    }
+    schema.execute(req).await.into()
 }
 
 async fn graphql_playground() -> impl IntoResponse {
