@@ -30,11 +30,16 @@ impl Mutation {
 
         let create_user = repo.create(user).await;
 
-        let user = CreateUser {
-            id: create_user.0.id,
-            username: create_user.1.username,
-            password: create_user.1.password,
-        };
-        Ok(user)
+        match create_user {
+            Ok(user) => {
+                let user = CreateUser {
+                    id: user.0.id,
+                    username: user.1.username,
+                    password: user.1.password,
+                };
+                Ok(user)
+            }
+            Err(e) => Err(e.to_string()),
+        }
     }
 }
