@@ -14,7 +14,6 @@ use axum::extract::{Json, State};
 use axum::response::IntoResponse;
 use axum::{extract::Extension, response::Html, routing::get, routing::post, Router};
 
-use graphql::subscription::SubscriptionRoot;
 use hyper::HeaderMap;
 use tower_http::cors::{Any, CorsLayer};
 
@@ -54,14 +53,12 @@ async fn main() {
 
 fn get_token_from_headers(headers: &HeaderMap) -> Option<Token> {
     headers
-        .get("Token")
+        .get("Authorization")
         .and_then(|value| value.to_str().map(|s| Token(s.to_string())).ok())
 }
 
-type MySchema = Schema<Query, Mutation, EmptySubscription>;
-
 async fn graphql_handler(
-    schema: Extension<MySchema>,
+    schema: Extension<Schema<Query, Mutation, EmptySubscription>>,
     headers: HeaderMap,
     req: Json<Request>,
 ) -> Json<Response> {
@@ -74,4 +71,23 @@ async fn graphql_handler(
 
 async fn graphql_playground() -> impl IntoResponse {
     Html(playground_source(GraphQLPlaygroundConfig::new("/")))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_graphql_handler_with_token() {
+        let mut headers = HeaderMap::new();
+        headers.insert("Authorization", "foo".parse().unwrap());
+
+        let processed_handler = graphql_handler(
+            Extension(Schema::build(Query, Mutation, EmptySubscription).finish()),
+            headers,
+            Json(Request::new("".to_string())),
+        );
+
+        assert_eq!(1, 1)
+    }
 }
