@@ -1,1 +1,1 @@
-pub mod get_user_interactor;
+pub mod usecase;

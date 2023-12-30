@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use domain::{
     infrastructure::interface::repository::{
         repository_interface::Repositories, user_repository_interface::UserRepository,
@@ -5,16 +6,12 @@ use domain::{
     models::user::User,
 };
 
-pub trait GetUserUseCase<R: Repositories> {
-    fn get_user(&self, id: String) -> Result<User, String>;
-}
-
 #[derive(Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
-pub struct GetUserInteractor<'r, R: Repositories> {
+pub struct UserInteractor<'r, R: Repositories> {
     user_repo: &'r R::UserRepo,
 }
 
-impl<'r, R: Repositories> GetUserInteractor<'r, R> {
+impl<'r, R: Repositories> UserInteractor<'r, R> {
     pub fn new(repositories: &'r R) -> Self {
         Self {
             user_repo: repositories.user_repo(),

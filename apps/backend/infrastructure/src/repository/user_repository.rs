@@ -3,11 +3,14 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use axum::Error;
 use domain::{
-    infrastructure::interface::repository::user_repository_interface::UserRepository,
+    infrastructure::interface::repository::{
+        repository_interface::Repositories, user_repository_interface::UserRepository,
+    },
     models::{interface::user_interface::UserTrait, user::User},
 };
 use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
 
+#[derive(Clone, Debug)]
 pub struct UserRepositoryImpl {
     db: Arc<Pool<Postgres>>,
 }

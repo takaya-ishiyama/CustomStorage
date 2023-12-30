@@ -1,8 +1,12 @@
-use crate::{db::persistence::postgres::Db, repository::user_repository::UserRepositoryImpl};
+use crate::{
+    db::persistence::postgres::Db,
+    repository::{repository_impl::RepositoryImpls, user_repository::UserRepositoryImpl},
+};
 use async_graphql::*;
 use domain::infrastructure::interface::repository::{
     repository_interface::Repositories, user_repository_interface::UserRepository,
 };
+use usecase::user::usecase::UserInteractor;
 
 #[derive(SimpleObject)]
 struct GetUser {
@@ -26,8 +30,11 @@ impl Query {
         #[graphql(desc = "Id of object")] id: String,
     ) -> Result<GetUser> {
         let db = ctx.data::<Db>().unwrap().0.clone();
-        let repo = UserRepositoryImpl::new(db);
-        let user = repo.find_by_id(id).await;
+        let repo = RepositoryImpls {
+            user_repo: UserRepositoryImpl::new(db),
+        };
+        let user_repo = UserInteractor::new(&repo);
+        let user = user_repo.get_user(id).await.unwrap();
         let user = GetUser {
             id: user.0.id,
             username: user.1.username,
