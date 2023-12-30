@@ -8,7 +8,7 @@ use domain::{
     },
     models::{interface::user_interface::UserTrait, user::User},
 };
-use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
+use sqlx::{pool::PoolConnection, prelude::FromRow, Acquire, PgConnection, Pool, Postgres};
 
 #[derive(Clone, Debug)]
 pub struct UserRepositoryImpl {

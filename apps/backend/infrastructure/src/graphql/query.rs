@@ -30,9 +30,7 @@ impl Query {
         #[graphql(desc = "Id of object")] id: String,
     ) -> Result<GetUser> {
         let db = ctx.data::<Db>().unwrap().0.clone();
-        let repo = RepositoryImpls {
-            user_repo: UserRepositoryImpl::new(db),
-        };
+        let repo = RepositoryImpls::new(db);
         let user_repo = UserInteractor::new(&repo);
         let user = user_repo.get_user(id).await.unwrap();
         let user = GetUser {
