@@ -3,14 +3,12 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use axum::Error;
 use domain::{
-    infrastructure::interface::repository::{
-        repository_interface::Repository, user_repository_interface::UserRepositoryTrait,
-    },
+    infrastructure::interface::repository::user_repository_interface::UserRepository,
     models::{interface::user_interface::UserTrait, user::User},
 };
 use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
 
-pub struct UserRepository {
+pub struct UserRepositoryImpl {
     db: Arc<Pool<Postgres>>,
 }
 
@@ -43,8 +41,7 @@ struct FindWithToken {
 }
 
 #[async_trait]
-// TODO: traitを使うようにする
-impl UserRepositoryTrait for UserRepository {
+impl UserRepository for UserRepositoryImpl {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
         Self { db }
     }
@@ -129,19 +126,18 @@ impl UserRepositoryTrait for UserRepository {
     // }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// #[cfg(test)]
+// mod tests {
+//     use domain::infrastructure::interface::db::db_interface::{DbTrait, MockDbTrait};
 
-    #[tokio::test]
-    async fn test_user_repository_find_by_id() {
-        let db = Arc::new(
-            sqlx::postgres::PgPool::connect("postgres://postgres:postgres@localhost:5432/postgres")
-                .await
-                .unwrap(),
-        );
-        let repo = UserRepository::new(db);
-        let user = repo.find_by_id("1".to_string()).await;
-        assert_eq!(user.0.id, "1".to_string());
-    }
-}
+//     use super::*;
+
+//     #[tokio::test]
+//     async fn test_user_repository_find_by_id() {
+//         let mut db_mock = MockDbTrait::new();
+
+//         let repo = UserRepository::new(db_mock);
+//         let user = repo.find_by_id("1".to_string()).await;
+//         assert_eq!(user.0.id, "1".to_string());
+//     }
+// }

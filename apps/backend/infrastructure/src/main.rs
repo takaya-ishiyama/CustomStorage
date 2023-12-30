@@ -2,6 +2,7 @@ mod auth;
 mod db;
 mod graphql;
 mod repository;
+mod test;
 
 use std::net::SocketAddr;
 

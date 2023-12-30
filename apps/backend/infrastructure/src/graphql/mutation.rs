@@ -1,10 +1,10 @@
 use async_graphql::{Context, Object, SimpleObject};
 use domain::{
-    infrastructure::interface::repository::user_repository_interface::UserRepositoryTrait,
+    infrastructure::interface::repository::user_repository_interface::UserRepository,
     models::{interface::user_interface::UserTrait, user::User},
 };
 
-use crate::{db::persistence::postgres::Db, repository::user_repository::UserRepository};
+use crate::{db::persistence::postgres::Db, repository::user_repository::UserRepositoryImpl};
 
 pub struct Mutation;
 
@@ -24,7 +24,7 @@ impl Mutation {
         #[graphql(desc = "password of object")] password: String,
     ) -> Result<CreateUser, String> {
         let db = ctx.data::<Db>().unwrap().0.clone();
-        let repo = UserRepository::new(db);
+        let repo = UserRepositoryImpl::new(db);
 
         let user = User::new("".to_string(), username, password).unwrap();
 

@@ -1,7 +1,7 @@
-use crate::{db::persistence::postgres::Db, repository::user_repository::UserRepository};
+use crate::{db::persistence::postgres::Db, repository::user_repository::UserRepositoryImpl};
 use async_graphql::*;
 use domain::infrastructure::interface::repository::{
-    repository_interface::Repository, user_repository_interface::UserRepositoryTrait,
+    repository_interface::Repositories, user_repository_interface::UserRepository,
 };
 
 #[derive(SimpleObject)]
@@ -26,7 +26,7 @@ impl Query {
         #[graphql(desc = "Id of object")] id: String,
     ) -> Result<GetUser> {
         let db = ctx.data::<Db>().unwrap().0.clone();
-        let repo = UserRepository::new(db);
+        let repo = UserRepositoryImpl::new(db);
         let user = repo.find_by_id(id).await;
         let user = GetUser {
             id: user.0.id,
