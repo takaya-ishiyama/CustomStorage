@@ -5,6 +5,10 @@ use domain::{
     models::user::User,
 };
 
+pub trait GetUserUseCase<R: Repositories> {
+    fn get_user(&self, id: String) -> Result<User, String>;
+}
+
 #[derive(Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 pub struct GetUserInteractor<'r, R: Repositories> {
     user_repo: &'r R::UserRepo,
