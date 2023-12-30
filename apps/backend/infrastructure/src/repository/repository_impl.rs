@@ -3,7 +3,7 @@ use std::sync::Arc;
 use domain::infrastructure::interface::repository::{
     repository_interface::Repositories, user_repository_interface::UserRepository,
 };
-use sqlx::{pool::PoolConnection, Pool, Postgres};
+use sqlx::{Pool, Postgres};
 
 use super::user_repository::UserRepositoryImpl;
 

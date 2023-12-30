@@ -5,12 +5,8 @@ use domain::{
     },
     models::{interface::user_interface::UserTrait, user::User},
 };
-use usecase::user::usecase::UserInteractor;
 
-use crate::{
-    db::persistence::postgres::Db,
-    repository::{repository_impl::RepositoryImpls, user_repository::UserRepositoryImpl},
-};
+use crate::{db::persistence::postgres::Db, repository::repository_impl::RepositoryImpls};
 
 pub struct Mutation;
 

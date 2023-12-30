@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use domain::{
     infrastructure::interface::repository::{
         repository_interface::Repositories, user_repository_interface::UserRepository,

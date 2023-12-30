@@ -1,11 +1,6 @@
-use crate::{
-    db::persistence::postgres::Db,
-    repository::{repository_impl::RepositoryImpls, user_repository::UserRepositoryImpl},
-};
+use crate::{db::persistence::postgres::Db, repository::repository_impl::RepositoryImpls};
 use async_graphql::*;
-use domain::infrastructure::interface::repository::{
-    repository_interface::Repositories, user_repository_interface::UserRepository,
-};
+use domain::infrastructure::interface::repository::repository_interface::Repositories;
 use usecase::user::usecase::UserInteractor;
 
 #[derive(SimpleObject)]
