@@ -4,9 +4,11 @@ use async_trait::async_trait;
 use mockall::automock;
 use sqlx::{Pool, Postgres};
 
+use crate::value_object::token::Token;
+
 #[automock]
 #[async_trait]
 pub trait TokenRepository {
-    // FIXME: poolの参照を渡すようにする
     fn new(db: Arc<Pool<Postgres>>) -> Self;
+    async fn create(&self, user_id: String) -> Result<Token, String>;
 }

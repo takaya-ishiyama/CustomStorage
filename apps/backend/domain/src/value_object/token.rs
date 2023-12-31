@@ -1,3 +1,5 @@
+use uuid::Uuid;
+
 pub trait TokenInterface {
     fn new(access_token: String, refresh_token: String, expiration_timestamp: i64) -> Self;
     fn check_expiration(&self) -> bool;
@@ -12,6 +14,16 @@ pub struct Token {
 
 impl TokenInterface for Token {
     fn new(access_token: String, refresh_token: String, expiration_timestamp: i64) -> Self {
+        let access_token = if access_token.is_empty() {
+            generate_token()
+        } else {
+            access_token
+        };
+        let refresh_token = if refresh_token.is_empty() {
+            generate_token()
+        } else {
+            refresh_token
+        };
         Self {
             access_token,
             refresh_token,
@@ -25,4 +37,8 @@ impl TokenInterface for Token {
         }
         true
     }
+}
+
+fn generate_token() -> String {
+    Uuid::new_v4().to_string()
 }
