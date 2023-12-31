@@ -4,6 +4,7 @@ use async_trait::async_trait;
 use domain::{
     infrastructure::interface::repository::user_repository_interface::UserRepository,
     models::{interface::user_interface::UserTrait, user::User},
+    value_object::token::{Token, TokenInterface},
 };
 use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
 
@@ -59,7 +60,7 @@ impl UserRepository for UserRepositoryImpl {
         UserTrait::new(user.id, user.username, user.password).unwrap()
     }
 
-    async fn find_with_token(&self, token: String) -> User {
+    async fn find_with_token(&self, token: String) -> Result<User, String> {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         conn.begin().await.unwrap();
@@ -72,16 +73,33 @@ impl UserRepository for UserRepositoryImpl {
                     session.refresh_token,
                     session.expiration_timestamp
                 FROM
-                    users
+                    session
                 JOIN
-                    session ON users.id = session.user_id;
-        ",
+                    users ON session.user_id = users.id;
+                WHERE
+                    session.access_token = $1;
+            ",
         )
         .bind(token)
         .fetch_one(conn)
-        .await
-        .unwrap();
-        return UserTrait::new(user.id, user.username, user.password).unwrap();
+        .await;
+
+        let user = match user {
+            Ok(user) => user,
+            Err(err) => panic!("{}", "user not found. ".to_string() + &err.to_string()),
+        };
+
+        let token = Token::new(
+            user.access_token,
+            user.refresh_token,
+            user.expiration_timestamp,
+        );
+
+        if !token.check_expiration() {
+            return Err("token is expired".to_string());
+        }
+
+        Ok(UserTrait::new(user.id, user.username, user.password).unwrap())
     }
 
     async fn create(&self, user: User) -> Result<User, String> {
@@ -126,18 +144,37 @@ impl UserRepository for UserRepositoryImpl {
     // }
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use domain::infrastructure::interface::db::db_interface::{DbTrait, MockDbTrait};
+#[cfg(test)]
+mod tests {
+    use domain::infrastructure::interface::db::db_interface::{new_db, DbTrait, MockDbTrait};
+    use sqlx::pool;
 
-//     use super::*;
+    use crate::db::persistence::postgres::Db;
 
-//     #[tokio::test]
-//     async fn test_user_repository_find_by_id() {
-//         let mut db_mock = MockDbTrait::new();
+    use super::*;
 
-//         let repo = UserRepository::new(db_mock);
-//         let user = repo.find_by_id("1".to_string()).await;
-//         assert_eq!(user.0.id, "1".to_string());
-//     }
-// }
+    #[tokio::test]
+    async fn test_user_repository_find_by_id() {
+        dotenv::dotenv().ok();
+        let database_url = std::env::var("TEST_DATABASE_URL").expect("DATABASE_URL is not set");
+
+        let pool = pool::Pool::<Postgres>::connect(&database_url)
+            .await
+            .unwrap();
+
+        // sqlx::migrate!("../db/migrations").run(&pool).await.unwrap();
+
+        let db = Arc::new(pool);
+
+        assert_eq!(1, 1);
+
+        // let repo = UserRepositoryImpl::new(db);
+        // let user = repo
+        //     .find_by_id("17b5ac0c-1429-469a-8522-053f7bf0f80d".to_string())
+        //     .await;
+        // assert_eq!(
+        //     user.0.id,
+        //     "17b5ac0c-1429-469a-8522-053f7bf0f80d".to_string()
+        // );
+    }
+}

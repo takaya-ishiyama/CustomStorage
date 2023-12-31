@@ -11,7 +11,7 @@ async-graphql = "6.0.11"
 sqlx = { version = "0.7.3", features = ["postgres", "runtime-tokio"] }
 async-trait = "0.1.74"
 mockall = { version = "0.12.0" }
-
+chrono = { version = "0.4.31" }
 
 [dependencies.uuid]
 version = "1.6.1"

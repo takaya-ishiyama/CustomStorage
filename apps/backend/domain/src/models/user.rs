@@ -6,6 +6,8 @@ use value_object::UserValueObject;
 
 use super::interface::user_interface::UserTrait;
 
+// value_objectディレクトリに移行する。データベース都合でドメインオブジェクトを作りたくないから
+
 #[derive(Debug, Clone)]
 pub struct User(pub UserEntity, pub UserValueObject);
 
@@ -18,7 +20,6 @@ impl UserTrait for User {
     }
 }
 
-// // テストモジュール
 // #[cfg(test)]
 // mod tests {
 //     // テスト対象の関数をインポート

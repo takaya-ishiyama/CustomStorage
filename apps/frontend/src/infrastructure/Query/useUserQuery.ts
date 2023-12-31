@@ -1,4 +1,5 @@
 import { UseQueryOptions, UseQueryResult, useQuery } from "react-query";
+import { base_uri } from "./backendUri";
 
 type UseUserQuery = (props: Props) => UseQueryResult<User, string[]>;
 
@@ -26,7 +27,7 @@ export const useUserQuery: UseUserQuery = ({ options }) => {
 		["user"],
 		async () => {
 			// FIXME: envから取得できない
-			const res = await fetch("http://localhost:8000/graphql", {
+			const res = await fetch(base_uri, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(query),
@@ -35,7 +36,7 @@ export const useUserQuery: UseUserQuery = ({ options }) => {
 				throw new Error(`HTTP error! Status: ${res.status}`);
 			}
 			const { data } = await res.json();
-			return data.user;
+			return data.getUser;
 		},
 		options,
 	);

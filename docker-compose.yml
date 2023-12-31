@@ -1,6 +1,26 @@
 version: "3.8"
 
 services:
+  test_db:
+    container_name: test_postgres
+    build:
+        context: ./postgres
+        dockerfile: Dockerfile
+        target: "database"
+    ports:
+        -   "5433:5433"
+    volumes:
+        - ./database/test-pg-data:/var/lib/postgresql/test-data
+    env_file:
+        - ./postgres/.env
+    restart: always
+    healthcheck:
+        test: pg_isready -U postgres
+        interval: 10s
+        timeout: 5s
+        retries: 5
+        start_period: 10s
+
   db:
     container_name: postgres
     build:
@@ -22,3 +42,4 @@ services:
         start_period: 10s
 volumes:
     pg-data:
+    test-pg-data:

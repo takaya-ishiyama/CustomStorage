@@ -24,6 +24,7 @@ sqlx-cli = { version = "0.7.3", features = ["postgres"] }
 mockall = { version = "0.12.0" }
 futures-util = "0.3.17"
 tracing = { version = "0.1.27" }
+chrono = { version = "0.4.31" }
 
 [dependencies.uuid]
 version = "1.6.1"

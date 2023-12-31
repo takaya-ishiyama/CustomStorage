@@ -11,6 +11,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { Header } from "./components/organisms/Header";
 
 export default function MyApp() {
 	const router = useRouter();
@@ -19,23 +20,8 @@ export default function MyApp() {
 	};
 	return (
 		<>
-			<AppBar position="static">
-				<Toolbar variant="dense">
-					<IconButton
-						edge="start"
-						color="inherit"
-						aria-label="menu"
-						sx={{ mr: 2 }}
-						onClick={handleClickGoHomePage}
-					>
-						<MenuOutlined />
-					</IconButton>
-					<Typography variant="h6" color="inherit" component="div">
-						Photos
-					</Typography>
-				</Toolbar>
-			</AppBar>
-			<Button variant="contained" onClick={handleClickGoHomePage} />
+			<Header />
+			<Button onClick={handleClickGoHomePage}>Go Home Page</Button>
 		</>
 	);
 }
