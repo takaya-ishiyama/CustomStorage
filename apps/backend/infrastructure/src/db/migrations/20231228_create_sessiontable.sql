@@ -4,7 +4,8 @@ CREATE TABLE session (
     access_token VARCHAR(255) NOT NULL,
     refresh_token VARCHAR(255),
     expiration_timestamp TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
 );
 
 
