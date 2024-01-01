@@ -2,13 +2,13 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use domain::{
-    infrastructure::interface::repository::token_repository_interface::TokenRepository,
+    infrastructure::interface::repository::session_repository_interface::SessionRepository,
     value_object::token::{Token, TokenInterface},
 };
 use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
 
 #[derive(Clone, Debug)]
-pub struct TokenRepositoryImpl {
+pub struct SessionRepositoryImpl {
     db: Arc<Pool<Postgres>>,
 }
 
@@ -21,7 +21,7 @@ struct CreateToken {
 }
 
 #[async_trait]
-impl TokenRepository for TokenRepositoryImpl {
+impl SessionRepository for SessionRepositoryImpl {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
         Self { db }
     }

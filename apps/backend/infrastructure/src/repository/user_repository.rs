@@ -3,14 +3,14 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use domain::{
     infrastructure::interface::repository::{
-        token_repository_interface::TokenRepository, user_repository_interface::UserRepository,
+        session_repository_interface::SessionRepository, user_repository_interface::UserRepository,
     },
     models::{interface::user_interface::UserTrait, user::User},
     value_object::token::{Token, TokenInterface},
 };
 use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
 
-use super::token_repository::TokenRepositoryImpl;
+use super::session_repository::SessionRepositoryImpl;
 
 #[derive(Clone, Debug)]
 pub struct UserRepositoryImpl {
@@ -107,7 +107,7 @@ impl UserRepository for UserRepositoryImpl {
     }
 
     async fn create(&self, user: User) -> Result<User, String> {
-        let token_repo = TokenRepositoryImpl::new(self.db.clone());
+        let token_repo = SessionRepositoryImpl::new(self.db.clone());
 
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();

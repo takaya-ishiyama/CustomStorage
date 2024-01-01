@@ -8,7 +8,7 @@ use crate::value_object::token::Token;
 
 #[automock]
 #[async_trait]
-pub trait TokenRepository {
+pub trait SessionRepository {
     fn new(db: Arc<Pool<Postgres>>) -> Self;
     async fn create(&self, user_id: String) -> Result<Token, String>;
 }
