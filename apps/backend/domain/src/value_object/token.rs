@@ -1,30 +1,47 @@
 use uuid::Uuid;
 
 pub trait SessionInterface {
-    fn new(access_token: String, refresh_token: String, expiration_timestamp: i64) -> Self;
+    fn new(
+        user_id: &str,
+        access_token: &str,
+        refresh_token: &str,
+        expiration_timestamp: &i64,
+    ) -> Self;
+    fn create(&self) -> Self;
     fn check_expiration(&self) -> bool;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 pub struct Session {
+    pub user_id: String,
     pub access_token: String,
     pub refresh_token: String,
     pub expiration_timestamp: i64,
 }
 
 impl SessionInterface for Session {
-    fn new(access_token: String, refresh_token: String, expiration_timestamp: i64) -> Self {
-        let access_token = if access_token.is_empty() {
-            generate_token()
-        } else {
-            access_token
-        };
-        let refresh_token = if refresh_token.is_empty() {
-            generate_token()
-        } else {
-            refresh_token
-        };
+    fn new(
+        user_id: &str,
+        access_token: &str,
+        refresh_token: &str,
+        expiration_timestamp: &i64,
+    ) -> Self {
         Self {
+            user_id: user_id.to_string(),
+            access_token: access_token.to_string(),
+            refresh_token: refresh_token.to_string(),
+            expiration_timestamp: *expiration_timestamp,
+        }
+    }
+    fn create(&self) -> Self {
+        let access_token = generate_token();
+        let refresh_token = generate_token();
+        let expiration_timestamp = chrono::Local::now()
+            .checked_add_signed(chrono::Duration::hours(1))
+            .unwrap()
+            .timestamp();
+        Self {
+            user_id: self.user_id.clone(),
             access_token,
             refresh_token,
             expiration_timestamp,

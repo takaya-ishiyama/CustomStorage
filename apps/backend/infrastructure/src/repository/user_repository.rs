@@ -94,9 +94,10 @@ impl UserRepository for UserRepositoryImpl {
         };
 
         let token = Session::new(
-            user.access_token,
-            user.refresh_token,
-            user.expiration_timestamp,
+            &user.id,
+            &user.access_token,
+            &user.refresh_token,
+            &user.expiration_timestamp,
         );
 
         if !token.check_expiration() {
@@ -106,7 +107,7 @@ impl UserRepository for UserRepositoryImpl {
         Ok(UserTrait::new(user.id, user.username, user.password).unwrap())
     }
 
-    async fn create(&self, user: User) -> Result<User, String> {
+    async fn create(&self, user: User) -> Result<(User, Session), String> {
         let token_repo = SessionRepositoryImpl::new(self.db.clone());
 
         let mut pool = self.db.acquire().await.unwrap();
@@ -123,14 +124,19 @@ impl UserRepository for UserRepositoryImpl {
 
         match create_user_result {
             Ok(create_user) => {
-                token_repo.create(create_user.id.clone()).await.unwrap();
+                let toke_result = token_repo.create(create_user.id.clone()).await;
+
+                let token = match toke_result {
+                    Ok(token) => token,
+                    Err(err) => return Err(err),
+                };
 
                 tx.commit().await.unwrap();
 
                 let user_result =
                     User::new(create_user.id, create_user.username, create_user.password);
                 match user_result {
-                    Ok(user) => Ok(user),
+                    Ok(user) => Ok((user, token)),
                     Err(err) => Err(err),
                 }
             }

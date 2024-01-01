@@ -8,11 +8,11 @@ services:
         dockerfile: Dockerfile
         target: "database"
     ports:
-        -   "5433:5433"
+        -   "5433:5432"
     volumes:
         - ./database/test-pg-data:/var/lib/postgresql/test-data
     env_file:
-        - ./postgres/.env
+        - ./postgres/.env.dev
     restart: always
     healthcheck:
         test: pg_isready -U postgres

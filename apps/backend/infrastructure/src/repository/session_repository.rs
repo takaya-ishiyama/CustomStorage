@@ -32,15 +32,15 @@ impl SessionRepository for SessionRepositoryImpl {
 
         let mut tx = conn.begin().await.unwrap();
 
-        let token = Session::new("".to_string(), "".to_string(), 0);
+        let token = Session::new(&user_id, "", "", &0).create();
 
         let token_result = sqlx::query_as::<_, CreateToken>(
             "INSERT INTO session (user_id, access_token, refresh_token, expiration_timestamp) VALUES ($1, $2, $3, $4) RETURNING *",
         )
-        .bind(user_id)
+        .bind(token.user_id)
         .bind(token.access_token)
         .bind(token.refresh_token)
-        .bind(0)
+        .bind(token.expiration_timestamp)
         .fetch_one(&mut *tx)
         .await;
 
@@ -48,9 +48,10 @@ impl SessionRepository for SessionRepositoryImpl {
             Ok(token) => {
                 tx.commit().await.unwrap();
                 Ok(Session::new(
-                    token.access_token,
-                    token.refresh_token,
-                    token.expiration_timestamp,
+                    &token.user_id,
+                    &token.access_token,
+                    &token.refresh_token,
+                    &token.expiration_timestamp,
                 ))
             }
             Err(e) => {

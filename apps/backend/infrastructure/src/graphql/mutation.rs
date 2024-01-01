@@ -15,6 +15,8 @@ struct CreateUser {
     id: String,
     username: String,
     password: String,
+    access_token: String,
+    refresh_token: String,
 }
 
 #[Object]
@@ -40,9 +42,11 @@ impl Mutation {
         match create_user {
             Ok(user) => {
                 let user = CreateUser {
-                    id: user.0.id,
-                    username: user.1.username,
-                    password: user.1.password,
+                    id: user.0 .0.id,
+                    username: user.0 .1.username,
+                    password: user.0 .1.password,
+                    access_token: user.1.access_token,
+                    refresh_token: user.1.refresh_token,
                 };
                 Ok(user)
             }
