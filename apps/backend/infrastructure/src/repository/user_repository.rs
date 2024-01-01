@@ -161,35 +161,50 @@ impl UserRepository for UserRepositoryImpl {
 
 #[cfg(test)]
 mod tests {
-    use domain::infrastructure::interface::db::db_interface::{new_db, DbTrait, MockDbTrait};
     use sqlx::pool;
 
-    use crate::db::persistence::postgres::Db;
+    use crate::test::setup_testdb::setup_database;
 
     use super::*;
 
-    #[tokio::test]
-    async fn test_user_repository_find_by_id() {
-        dotenv::dotenv().ok();
-        let database_url = std::env::var("TEST_DATABASE_URL").expect("DATABASE_URL is not set");
-
-        let pool = pool::Pool::<Postgres>::connect(&database_url)
-            .await
-            .unwrap();
-
-        // sqlx::migrate!("../db/migrations").run(&pool).await.unwrap();
-
+    // #[tokio::test]
+    #[sqlx::test]
+    async fn test_user_repository_find_by_id() -> sqlx::Result<()> {
+        let pool = setup_database().await;
         let db = Arc::new(pool);
+        let repo = UserRepositoryImpl::new(db);
 
-        assert_eq!(1, 1);
+        let user = repo
+            .find_by_id("17b5ac0c-1429-469a-8522-053f7bf0f80d".to_string())
+            .await;
+        assert_eq!(
+            user.0.id,
+            "17b5ac0c-1429-469a-8522-053f7bf0f80d".to_string()
+        );
 
-        // let repo = UserRepositoryImpl::new(db);
-        // let user = repo
-        //     .find_by_id("17b5ac0c-1429-469a-8522-053f7bf0f80d".to_string())
-        //     .await;
-        // assert_eq!(
-        //     user.0.id,
-        //     "17b5ac0c-1429-469a-8522-053f7bf0f80d".to_string()
-        // );
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn test_user_repository_create() -> sqlx::Result<()> {
+        let pool = setup_database().await;
+        let db = Arc::new(pool);
+        let repo = UserRepositoryImpl::new(db);
+
+        let data = User::new(
+            "".to_string(),
+            "test_user_repository_create".to_string(),
+            "password".to_string(),
+        )
+        .unwrap();
+
+        let user = repo.create(data).await.unwrap();
+
+        assert_eq!(
+            user.0 .1.username,
+            "test_user_repository_create".to_string()
+        );
+
+        Ok(())
     }
 }
