@@ -1,18 +1,18 @@
 use uuid::Uuid;
 
-pub trait TokenInterface {
+pub trait SessionInterface {
     fn new(access_token: String, refresh_token: String, expiration_timestamp: i64) -> Self;
     fn check_expiration(&self) -> bool;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
-pub struct Token {
+pub struct Session {
     pub access_token: String,
     pub refresh_token: String,
     pub expiration_timestamp: i64,
 }
 
-impl TokenInterface for Token {
+impl SessionInterface for Session {
     fn new(access_token: String, refresh_token: String, expiration_timestamp: i64) -> Self {
         let access_token = if access_token.is_empty() {
             generate_token()

@@ -6,7 +6,7 @@ use domain::{
         session_repository_interface::SessionRepository, user_repository_interface::UserRepository,
     },
     models::{interface::user_interface::UserTrait, user::User},
-    value_object::token::{Token, TokenInterface},
+    value_object::token::{Session, SessionInterface},
 };
 use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
 
@@ -93,7 +93,7 @@ impl UserRepository for UserRepositoryImpl {
             Err(err) => panic!("{}", "user not found. ".to_string() + &err.to_string()),
         };
 
-        let token = Token::new(
+        let token = Session::new(
             user.access_token,
             user.refresh_token,
             user.expiration_timestamp,
