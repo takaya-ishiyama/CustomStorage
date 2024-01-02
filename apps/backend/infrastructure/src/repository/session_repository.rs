@@ -143,10 +143,6 @@ impl SessionRepository for SessionRepositoryImpl {
 #[cfg(test)]
 mod tests {
 
-    use std::time::{Duration, SystemTime};
-
-    use sqlx::types::chrono::{DateTime, Utc};
-
     use crate::test::{setup_testdb::setup_database, test_data::get_test_user};
 
     use super::*;
