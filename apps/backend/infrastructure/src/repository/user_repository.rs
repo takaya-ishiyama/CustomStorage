@@ -8,7 +8,11 @@ use domain::{
     models::{interface::user_interface::UserTrait, user::User},
     value_object::token::{Session, SessionInterface},
 };
-use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
+use sqlx::{
+    prelude::FromRow,
+    types::chrono::{DateTime, Local, NaiveDateTime},
+    Acquire, Pool, Postgres,
+};
 
 use super::session_repository::SessionRepositoryImpl;
 
@@ -42,7 +46,7 @@ struct FindWithToken {
 
     access_token: String,
     refresh_token: String,
-    expiration_timestamp: i64,
+    expiration_timestamp: NaiveDateTime,
 }
 
 #[async_trait]
@@ -50,7 +54,7 @@ impl UserRepository for UserRepositoryImpl {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
         Self { db }
     }
-    async fn find_by_id(&self, id: String) -> User {
+    async fn find_by_id(&self, id: &str) -> User {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         conn.begin().await.unwrap();
@@ -61,10 +65,10 @@ impl UserRepository for UserRepositoryImpl {
             .await
             .unwrap();
 
-        UserTrait::new(user.id, user.username, user.password).unwrap()
+        UserTrait::new(&user.id, &user.username, &user.password).unwrap()
     }
 
-    async fn find_with_token(&self, token: String) -> Result<User, String> {
+    async fn find_with_token(&self, token: &str) -> Result<User, String> {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         conn.begin().await.unwrap();
@@ -104,7 +108,7 @@ impl UserRepository for UserRepositoryImpl {
             return Err("token is expired".to_string());
         }
 
-        Ok(UserTrait::new(user.id, user.username, user.password).unwrap())
+        Ok(UserTrait::new(&user.id, &user.username, &user.password).unwrap())
     }
 
     async fn create(&self, user: User) -> Result<(User, Session), String> {
@@ -124,7 +128,7 @@ impl UserRepository for UserRepositoryImpl {
 
         match create_user_result {
             Ok(create_user) => {
-                let toke_result = token_repo.create(create_user.id.clone()).await;
+                let toke_result = token_repo.create(&create_user.id).await;
 
                 let token = match toke_result {
                     Ok(token) => token,
@@ -133,8 +137,11 @@ impl UserRepository for UserRepositoryImpl {
 
                 tx.commit().await.unwrap();
 
-                let user_result =
-                    User::new(create_user.id, create_user.username, create_user.password);
+                let user_result = User::new(
+                    &create_user.id,
+                    &create_user.username,
+                    &create_user.password,
+                );
                 match user_result {
                     Ok(user) => Ok((user, token)),
                     Err(err) => Err(err),
@@ -161,13 +168,11 @@ impl UserRepository for UserRepositoryImpl {
 
 #[cfg(test)]
 mod tests {
-    use sqlx::pool;
 
     use crate::test::setup_testdb::setup_database;
 
     use super::*;
 
-    // #[tokio::test]
     #[sqlx::test]
     async fn test_user_repository_find_by_id() -> sqlx::Result<()> {
         let pool = setup_database().await;
@@ -175,8 +180,9 @@ mod tests {
         let repo = UserRepositoryImpl::new(db);
 
         let user = repo
-            .find_by_id("17b5ac0c-1429-469a-8522-053f7bf0f80d".to_string())
+            .find_by_id("17b5ac0c-1429-469a-8522-053f7bf0f80d")
             .await;
+
         assert_eq!(
             user.0.id,
             "17b5ac0c-1429-469a-8522-053f7bf0f80d".to_string()
@@ -191,12 +197,7 @@ mod tests {
         let db = Arc::new(pool);
         let repo = UserRepositoryImpl::new(db);
 
-        let data = User::new(
-            "".to_string(),
-            "test_user_repository_create".to_string(),
-            "password".to_string(),
-        )
-        .unwrap();
+        let data = User::new("", "test_user_repository_create", "password").unwrap();
 
         let user = repo.create(data).await.unwrap();
 

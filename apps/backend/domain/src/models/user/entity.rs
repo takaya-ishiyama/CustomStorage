@@ -4,11 +4,11 @@ pub struct UserEntity {
 }
 
 impl UserEntity {
-    pub fn new(id: String) -> Result<Self, &'static str> {
+    pub fn new(id: &str) -> Result<Self, &'static str> {
         // if id.is_empty() {
         //     return Err("ID cannot be empty");
         // }
-        return Ok(UserEntity { id });
+        return Ok(UserEntity { id: id.to_string() });
     }
 }
 

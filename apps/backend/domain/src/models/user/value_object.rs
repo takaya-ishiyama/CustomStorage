@@ -5,13 +5,16 @@ pub struct UserValueObject {
 }
 
 impl UserValueObject {
-    pub fn new(username: String, password: String) -> Result<Self, &'static str> {
+    pub fn new(username: &str, password: &str) -> Result<Self, &'static str> {
         // バリデーション
         if username.is_empty() {
             return Err("Name cannot be empty");
         }
 
-        return Ok(UserValueObject { username, password });
+        return Ok(UserValueObject {
+            username: username.to_string(),
+            password: password.to_string(),
+        });
     }
 }
 
@@ -26,7 +29,7 @@ mod tests {
     fn test_user_value_object_true() {
         let name = "test".to_string();
         let password = "test".to_string();
-        let user_value_object = UserValueObject::new(name, password).unwrap();
+        let user_value_object = UserValueObject::new(&name, &password).unwrap();
         assert_eq!(user_value_object.username, "test");
         assert_eq!(user_value_object.password, "test");
     }
@@ -35,7 +38,7 @@ mod tests {
     fn test_user_value_object_null_name() {
         let name = "".to_string();
         let password = "test".to_string();
-        let user_value_object = UserValueObject::new(name, password);
+        let user_value_object = UserValueObject::new(&name, &password);
         assert!(user_value_object.is_err());
     }
 }

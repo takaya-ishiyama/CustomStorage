@@ -12,7 +12,7 @@ use super::interface::user_interface::UserTrait;
 pub struct User(pub UserEntity, pub UserValueObject);
 
 impl UserTrait for User {
-    fn new(id: String, username: String, password: String) -> Result<Self, String> {
+    fn new(id: &str, username: &str, password: &str) -> Result<Self, String> {
         Ok(User(
             UserEntity::new(id).unwrap(),
             UserValueObject::new(username, password).unwrap(),

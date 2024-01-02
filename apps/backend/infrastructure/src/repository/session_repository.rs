@@ -5,7 +5,11 @@ use domain::{
     infrastructure::interface::repository::session_repository_interface::SessionRepository,
     value_object::token::{Session, SessionInterface},
 };
-use sqlx::{prelude::FromRow, Acquire, Pool, Postgres};
+use sqlx::{
+    prelude::FromRow,
+    types::chrono::{DateTime, Local, NaiveDateTime},
+    Acquire, Pool, Postgres,
+};
 
 #[derive(Clone, Debug)]
 pub struct SessionRepositoryImpl {
@@ -14,11 +18,11 @@ pub struct SessionRepositoryImpl {
 
 #[derive(FromRow)]
 struct CreateToken {
-    id: i64,
+    id: i32,
     user_id: String,
     access_token: String,
     refresh_token: String,
-    expiration_timestamp: i64,
+    expiration_timestamp: NaiveDateTime,
 }
 
 #[async_trait]
@@ -26,13 +30,13 @@ impl SessionRepository for SessionRepositoryImpl {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
         Self { db }
     }
-    async fn create(&self, user_id: String) -> Result<Session, String> {
+    async fn create(&self, user_id: &str) -> Result<Session, String> {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
 
         let mut tx = conn.begin().await.unwrap();
 
-        let token = Session::new(&user_id, "", "", &0).create();
+        let token = Session::new(user_id, "", "", &Local::now().naive_local()).create();
 
         let token_result = sqlx::query_as::<_, CreateToken>(
             "INSERT INTO session (user_id, access_token, refresh_token, expiration_timestamp) VALUES ($1, $2, $3, $4) RETURNING *",
@@ -59,5 +63,29 @@ impl SessionRepository for SessionRepositoryImpl {
                 Err(e.to_string())
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use crate::test::setup_testdb::setup_database;
+
+    use super::*;
+
+    #[sqlx::test]
+    async fn test_session_repository_create() -> sqlx::Result<()> {
+        let pool = setup_database().await;
+        let db = Arc::new(pool);
+        let repo = SessionRepositoryImpl::new(db);
+
+        let session = repo
+            .create("17b5ac0c-1429-469a-8522-053f7bf0f80d")
+            .await
+            .unwrap();
+
+        assert_eq!(session.user_id, "17b5ac0c-1429-469a-8522-053f7bf0f80d");
+
+        Ok(())
     }
 }

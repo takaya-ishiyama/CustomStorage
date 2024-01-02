@@ -17,7 +17,7 @@ impl<'r, R: Repositories> UserInteractor<'r, R> {
         }
     }
 
-    pub async fn get_user(&self, id: String) -> Result<User, String> {
+    pub async fn get_user(&self, id: &str) -> Result<User, String> {
         let user = self.user_repo.find_by_id(id).await;
         Ok(user)
     }

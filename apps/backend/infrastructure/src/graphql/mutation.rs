@@ -35,7 +35,7 @@ impl Mutation {
 
         // let user_repo = UserInteractor::new(&repo);
 
-        let user = User::new("".to_string(), username, password).unwrap();
+        let user = User::new("", &username, &password).unwrap();
 
         let create_user = user_repo.create(user).await;
 

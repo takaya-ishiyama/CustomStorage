@@ -10,5 +10,5 @@ use crate::value_object::token::Session;
 #[async_trait]
 pub trait SessionRepository {
     fn new(db: Arc<Pool<Postgres>>) -> Self;
-    async fn create(&self, user_id: String) -> Result<Session, String>;
+    async fn create(&self, user_id: &str) -> Result<Session, String>;
 }
