@@ -75,6 +75,31 @@ impl UserRepository for UserRepositoryImpl {
         UserTrait::new(&user.id, &user.username, &user.password).unwrap()
     }
 
+    async fn find_by_username_and_password(
+        &self,
+        username: &str,
+        password: &str,
+    ) -> Result<User, String> {
+        let mut pool = self.db.acquire().await.unwrap();
+        let conn = pool.acquire().await.unwrap();
+        conn.begin().await.unwrap();
+
+        let user = sqlx::query_as::<_, FindOne>(
+            "SELECT * FROM users WHERE username = $1 AND password = $2",
+        )
+        .bind(username)
+        .bind(password)
+        .fetch_one(conn)
+        .await;
+
+        let user = match user {
+            Ok(user) => user,
+            Err(err) => return Err(err.to_string()),
+        };
+
+        Ok(UserTrait::new(&user.id, &user.username, &user.password).unwrap())
+    }
+
     async fn find_with_token(&self, token: &str) -> Result<User, String> {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
@@ -198,7 +223,7 @@ mod tests {
 
     use sqlx::PgPool;
 
-    use crate::test::setup_testdb::setup_database;
+    use crate::test::{setup_testdb::setup_database, test_data::get_test_user};
 
     use super::*;
 
@@ -216,6 +241,24 @@ mod tests {
             user.0.id,
             "17b5ac0c-1429-469a-8522-053f7bf0f80d".to_string()
         );
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn test_user_repository_find_by_username_and_password(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
+        let db = Arc::new(pool);
+        let repo = UserRepositoryImpl::new(db);
+
+        let init_user = &get_test_user()[0];
+
+        let user = repo
+            .find_by_username_and_password(&init_user.1.username, &init_user.1.password)
+            .await
+            .unwrap();
+
+        assert_eq!(user.0.id, init_user.0.id);
 
         Ok(())
     }

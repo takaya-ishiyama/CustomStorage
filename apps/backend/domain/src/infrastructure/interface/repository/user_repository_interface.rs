@@ -13,5 +13,10 @@ pub trait UserRepository {
     fn new(db: Arc<Pool<Postgres>>) -> Self;
     async fn find_by_id(&self, id: &str) -> User;
     async fn find_with_token(&self, token: &str) -> Result<User, String>;
+    async fn find_by_username_and_password(
+        &self,
+        username: &str,
+        password: &str,
+    ) -> Result<User, String>;
     async fn create(&self, data: User) -> Result<(User, Session), String>;
 }
