@@ -41,3 +41,20 @@ impl<'r, R: Repositories> SessionInteractor<'r, R> {
         Ok(session)
     }
 }
+
+// #[cfg(test)]
+// mod tests {
+
+//     use domain::infrastructure::interface::repository::{
+//         session_repository_interface::MockSessionRepository,
+//         user_repository_interface::{MockUserRepository, UserRepository},
+//     };
+
+//     use super::*;
+
+//     #[test]
+//     fn test_session_interactor_update_access_token() {
+//         let mock_user_repo = MockUserRepository;
+//         assert_eq!(1, 1)
+//     }
+// }
