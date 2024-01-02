@@ -7,7 +7,7 @@ use domain::{
 };
 use sqlx::{
     prelude::FromRow,
-    types::chrono::{DateTime, Local, NaiveDateTime},
+    types::chrono::{Local, NaiveDateTime},
     Acquire, Pool, Postgres,
 };
 
@@ -18,7 +18,7 @@ pub struct SessionRepositoryImpl {
 
 #[derive(FromRow)]
 struct CreateToken {
-    id: i32,
+    // id: i32,
     user_id: String,
     access_token: String,
     refresh_token: String,
@@ -69,7 +69,7 @@ impl SessionRepository for SessionRepositoryImpl {
 #[cfg(test)]
 mod tests {
 
-    use crate::test::setup_testdb::setup_database;
+    use crate::test::{setup_testdb::setup_database, test_data::get_test_user};
 
     use super::*;
 
@@ -79,10 +79,9 @@ mod tests {
         let db = Arc::new(pool);
         let repo = SessionRepositoryImpl::new(db);
 
-        let session = repo
-            .create("17b5ac0c-1429-469a-8522-053f7bf0f80d")
-            .await
-            .unwrap();
+        let test_user_id = get_test_user()[0].clone().0.id;
+
+        let session = repo.create(test_user_id.as_str()).await.unwrap();
 
         assert_eq!(session.user_id, "17b5ac0c-1429-469a-8522-053f7bf0f80d");
 

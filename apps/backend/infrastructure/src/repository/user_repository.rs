@@ -8,11 +8,7 @@ use domain::{
     models::{interface::user_interface::UserTrait, user::User},
     value_object::token::{Session, SessionInterface},
 };
-use sqlx::{
-    prelude::FromRow,
-    types::chrono::{DateTime, Local, NaiveDateTime},
-    Acquire, Pool, Postgres,
-};
+use sqlx::{prelude::FromRow, types::chrono::NaiveDateTime, Acquire, Pool, Postgres};
 
 use super::session_repository::SessionRepositoryImpl;
 
@@ -153,17 +149,6 @@ impl UserRepository for UserRepositoryImpl {
             }
         }
     }
-
-    // async fn find_all(&self) -> Vec<User> {
-    //     let mut pool = self.db.acquire().await.unwrap();
-    //     let conn = pool.acquire().await.unwrap();
-    //     conn.begin().await.unwrap();
-    //     let users = sqlx::query_as!(FindOne, "SELECT * FROM users")
-    //         .fetch_all(conn)
-    //         .await
-    //         .unwrap();
-    //     return users;
-    // }
 }
 
 #[cfg(test)]
