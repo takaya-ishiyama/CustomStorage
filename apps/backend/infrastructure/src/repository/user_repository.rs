@@ -8,7 +8,11 @@ use domain::{
     models::{interface::user_interface::UserTrait, user::User},
     value_object::token::{Session, SessionInterface},
 };
-use sqlx::{prelude::FromRow, types::chrono::NaiveDateTime, Acquire, Pool, Postgres};
+use sqlx::{
+    prelude::FromRow,
+    types::chrono::{Local, NaiveDateTime},
+    Acquire, Pool, Postgres,
+};
 
 use super::session_repository::SessionRepositoryImpl;
 
@@ -40,6 +44,15 @@ struct FindWithToken {
     #[sqlx(skip)]
     password: String,
 
+    access_token: String,
+    refresh_token: String,
+    expiration_timestamp: NaiveDateTime,
+}
+
+#[derive(FromRow)]
+struct CreateSession {
+    // id: i32,
+    user_id: String,
     access_token: String,
     refresh_token: String,
     expiration_timestamp: NaiveDateTime,
@@ -124,14 +137,34 @@ impl UserRepository for UserRepositoryImpl {
 
         match create_user_result {
             Ok(create_user) => {
-                let toke_result = token_repo.create(&create_user.id).await;
+                // let toke_result = token_repo.create(&create_user.id).await;
 
-                let token = match toke_result {
-                    Ok(token) => token,
-                    Err(err) => return Err(err),
+                let session_input_data =
+                    Session::new(&create_user.id, "", "", &Local::now().naive_local()).create();
+
+                let session_result = sqlx::query_as::<_, CreateSession>(
+                    "INSERT INTO session (user_id, access_token, refresh_token, expiration_timestamp) VALUES ($1, $2, $3, $4) RETURNING *",
+                )
+                .bind(session_input_data.user_id)
+                .bind(session_input_data.access_token)
+                .bind(session_input_data.refresh_token)
+                .bind(session_input_data.expiration_timestamp)
+                .fetch_one(&mut *tx)
+                .await;
+
+                let created_session = match session_result {
+                    Ok(created_session) => created_session,
+                    Err(err) => return Err(err.to_string()),
                 };
 
                 tx.commit().await.unwrap();
+
+                let session = Session::new(
+                    &created_session.user_id,
+                    &created_session.access_token,
+                    &created_session.refresh_token,
+                    &created_session.expiration_timestamp,
+                );
 
                 let user_result = User::new(
                     &create_user.id,
@@ -139,7 +172,7 @@ impl UserRepository for UserRepositoryImpl {
                     &create_user.password,
                 );
                 match user_result {
-                    Ok(user) => Ok((user, token)),
+                    Ok(user) => Ok((user, session)),
                     Err(err) => Err(err),
                 }
             }
