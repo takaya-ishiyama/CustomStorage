@@ -7,10 +7,10 @@
 
 
 ## データベース操作
-database/pg-dataにマウントされているからデータベースを完全削除するときは消す
-sqlx migrate run
-sqlx database drop
+- database/pg-dataにマウントされているからデータベースを完全削除するときは消す
+- sqlx migrate run
+- sqlx database drop
 
 ### memo
-cargo fmt でフォーマットの修正が出来る
-cargo clippy --fix を使うと自動で直してくれる。
+- cargo fmt でフォーマットの修正が出来る
+- cargo clippy --fix を使うと自動で直してくれる。
