@@ -43,6 +43,7 @@ struct FindWithToken {
     access_token: String,
     refresh_token: String,
     expiration_timestamp: NaiveDateTime,
+    expiration_timestamp_for_refresh: NaiveDateTime,
 }
 
 #[derive(FromRow)]
@@ -52,6 +53,7 @@ struct CreateSession {
     access_token: String,
     refresh_token: String,
     expiration_timestamp: NaiveDateTime,
+    expiration_timestamp_for_refresh: NaiveDateTime,
 }
 
 #[async_trait]
@@ -84,7 +86,8 @@ impl UserRepository for UserRepositoryImpl {
                     users.username,
                     session.access_token,
                     session.refresh_token,
-                    session.expiration_timestamp
+                    session.expiration_timestamp,
+                    session.expiration_timestamp_for_refresh
                 FROM
                     session
                 JOIN
@@ -107,6 +110,7 @@ impl UserRepository for UserRepositoryImpl {
             &user_with_session.access_token,
             &user_with_session.refresh_token,
             &user_with_session.expiration_timestamp,
+            &user_with_session.expiration_timestamp_for_refresh,
         );
 
         if !token.check_expiration() {
@@ -136,16 +140,23 @@ impl UserRepository for UserRepositoryImpl {
 
         match create_user_result {
             Ok(create_user) => {
-                let session_input_data =
-                    Session::new(&create_user.id, "", "", &Local::now().naive_local()).create();
+                let session_input_data = Session::new(
+                    &create_user.id,
+                    "",
+                    "",
+                    &Local::now().naive_local(),
+                    &Local::now().naive_local(),
+                )
+                .create();
 
                 let session_result = sqlx::query_as::<_, CreateSession>(
-                    "INSERT INTO session (user_id, access_token, refresh_token, expiration_timestamp) VALUES ($1, $2, $3, $4) RETURNING *",
+                    "INSERT INTO session (user_id, access_token, refresh_token, expiration_timestamp, expiration_timestamp_for_refresh) VALUES ($1, $2, $3, $4, $5) RETURNING *",
                 )
                 .bind(session_input_data.user_id)
                 .bind(session_input_data.access_token)
                 .bind(session_input_data.refresh_token)
                 .bind(session_input_data.expiration_timestamp)
+                .bind(session_input_data.expiration_timestamp_for_refresh)
                 .fetch_one(&mut *tx)
                 .await;
 
@@ -161,6 +172,7 @@ impl UserRepository for UserRepositoryImpl {
                     &created_session.access_token,
                     &created_session.refresh_token,
                     &created_session.expiration_timestamp,
+                    &created_session.expiration_timestamp_for_refresh,
                 );
 
                 let user_result = User::new(

@@ -22,6 +22,7 @@ struct CreateToken {
     access_token: String,
     refresh_token: String,
     expiration_timestamp: NaiveDateTime,
+    expiration_timestamp_for_refresh: NaiveDateTime,
 }
 
 #[derive(FromRow)]
@@ -30,6 +31,7 @@ struct GetAccessTokenByRefreshToken {
     access_token: String,
     refresh_token: String,
     expiration_timestamp: NaiveDateTime,
+    expiration_timestamp_for_refresh: NaiveDateTime,
 }
 
 #[async_trait]
@@ -44,15 +46,23 @@ impl SessionRepository for SessionRepositoryImpl {
 
         let mut tx = conn.begin().await.unwrap();
 
-        let token = Session::new(user_id, "", "", &Local::now().naive_local()).create();
+        let token = Session::new(
+            user_id,
+            "",
+            "",
+            &Local::now().naive_local(),
+            &Local::now().naive_local(),
+        )
+        .create();
 
         let token_result = sqlx::query_as::<_, CreateToken>(
-            "INSERT INTO session (user_id, access_token, refresh_token, expiration_timestamp) VALUES ($1, $2, $3, $4) RETURNING *",
+            "INSERT INTO session (user_id, access_token, refresh_token, expiration_timestamp, expiration_timestamp_for_refresh) VALUES ($1, $2, $3, $4, $5) RETURNING *",
         )
         .bind(token.user_id)
         .bind(token.access_token)
         .bind(token.refresh_token)
         .bind(token.expiration_timestamp)
+        .bind(token.expiration_timestamp_for_refresh)
         .fetch_one(&mut *tx)
         .await;
 
@@ -64,6 +74,7 @@ impl SessionRepository for SessionRepositoryImpl {
                     &token.access_token,
                     &token.refresh_token,
                     &token.expiration_timestamp,
+                    &token.expiration_timestamp_for_refresh,
                 ))
             }
             Err(e) => {
@@ -94,6 +105,7 @@ impl SessionRepository for SessionRepositoryImpl {
                     &session.access_token,
                     &session.refresh_token,
                     &session.expiration_timestamp,
+                    &session.expiration_timestamp_for_refresh,
                 ))
             }
             Err(e) => {
@@ -127,6 +139,7 @@ impl SessionRepository for SessionRepositoryImpl {
                     &session.access_token,
                     &session.refresh_token,
                     &session.expiration_timestamp,
+                    &session.expiration_timestamp_for_refresh,
                 ))
             }
             Err(e) => {
@@ -189,8 +202,14 @@ mod tests {
 
         let create_session = repo.create(test_user_id.as_str()).await.unwrap();
 
-        let input_session =
-            Session::new(&create_session.user_id, "", "", &Local::now().naive_local()).create();
+        let input_session = Session::new(
+            &create_session.user_id,
+            "",
+            "",
+            &Local::now().naive_local(),
+            &Local::now().naive_local(),
+        )
+        .create();
 
         let session = repo
             .update(&Session::new(
@@ -198,6 +217,7 @@ mod tests {
                 &input_session.access_token,
                 &create_session.refresh_token,
                 &input_session.expiration_timestamp,
+                &input_session.expiration_timestamp_for_refresh,
             ))
             .await
             .unwrap();

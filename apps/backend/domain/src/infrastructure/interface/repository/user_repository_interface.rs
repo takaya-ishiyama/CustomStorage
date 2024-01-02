@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use sqlx::{pool::PoolConnection, postgres::PgConnectOptions, Pool, Postgres};
+use sqlx::{Pool, Postgres};
 
 use crate::{models::user::User, value_object::token::Session};
 

@@ -29,6 +29,7 @@ impl<'r, R: Repositories> SessionInteractor<'r, R> {
             &session.access_token,
             &session.refresh_token,
             &session.expiration_timestamp,
+            &session.expiration_timestamp_for_refresh,
         )
         .create();
         let input_session = Session::new(
@@ -36,6 +37,7 @@ impl<'r, R: Repositories> SessionInteractor<'r, R> {
             &create_new_session.access_token,
             &session.refresh_token,
             &create_new_session.expiration_timestamp,
+            &session.expiration_timestamp_for_refresh,
         );
         let session = self.session_repo.update(&input_session).await.unwrap();
         Ok(session)
