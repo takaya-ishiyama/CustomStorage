@@ -73,10 +73,7 @@ impl SessionRepository for SessionRepositoryImpl {
         }
     }
 
-    async fn get_access_token_by_refresh_token(
-        &self,
-        refresh_token: &str,
-    ) -> Result<Session, String> {
+    async fn find_by_refresh_token(&self, refresh_token: &str) -> Result<Session, String> {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
 
@@ -173,7 +170,7 @@ mod tests {
         let create_session = repo.create(test_user_id.as_str()).await.unwrap();
 
         let session = repo
-            .get_access_token_by_refresh_token(create_session.refresh_token.as_str())
+            .find_by_refresh_token(create_session.refresh_token.as_str())
             .await
             .unwrap();
 

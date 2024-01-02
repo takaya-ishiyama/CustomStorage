@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 domain = { path = "../domain" }
 async-trait = "0.1.74"
+chrono = { version = "0.4.31" }

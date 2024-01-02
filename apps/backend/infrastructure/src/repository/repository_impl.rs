@@ -31,7 +31,7 @@ impl Repositories for RepositoryImpls {
         &self.user_repo
     }
 
-    fn token_repo(&self) -> &Self::SessionRepo {
+    fn session_repo(&self) -> &Self::SessionRepo {
         &self.token_repo
     }
 }

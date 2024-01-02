@@ -14,5 +14,5 @@ pub trait Repositories {
 
     fn new(db: Arc<Pool<Postgres>>) -> Self;
     fn user_repo(&self) -> &Self::UserRepo;
-    fn token_repo(&self) -> &Self::SessionRepo;
+    fn session_repo(&self) -> &Self::SessionRepo;
 }

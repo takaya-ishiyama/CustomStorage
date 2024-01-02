@@ -11,9 +11,6 @@ use crate::value_object::token::Session;
 pub trait SessionRepository {
     fn new(db: Arc<Pool<Postgres>>) -> Self;
     async fn create(&self, user_id: &str) -> Result<Session, String>;
-    async fn get_access_token_by_refresh_token(
-        &self,
-        refresh_token: &str,
-    ) -> Result<Session, String>;
+    async fn find_by_refresh_token(&self, refresh_token: &str) -> Result<Session, String>;
     async fn update(&self, session: &Session) -> Result<Session, String>;
 }
