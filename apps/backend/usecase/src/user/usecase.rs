@@ -2,7 +2,8 @@ use domain::{
     infrastructure::interface::repository::{
         repository_interface::Repositories, user_repository_interface::UserRepository,
     },
-    models::user::User,
+    models::{interface::user_interface::UserTrait, user::User},
+    value_object::token::Session,
 };
 
 #[derive(Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -20,5 +21,15 @@ impl<'r, R: Repositories> UserInteractor<'r, R> {
     pub async fn get_user(&self, id: &str) -> Result<User, String> {
         let user = self.user_repo.find_by_id(id).await;
         Ok(user)
+    }
+
+    pub async fn create_user(
+        &self,
+        username: &str,
+        password: &str,
+    ) -> Result<(User, Session), String> {
+        let input_user = User::new("", username, password).unwrap();
+        let created_user = self.user_repo.create(input_user).await.unwrap();
+        Ok(created_user)
     }
 }

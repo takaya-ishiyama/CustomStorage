@@ -2,9 +2,7 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use domain::{
-    infrastructure::interface::repository::{
-        session_repository_interface::SessionRepository, user_repository_interface::UserRepository,
-    },
+    infrastructure::interface::repository::user_repository_interface::UserRepository,
     models::{interface::user_interface::UserTrait, user::User},
     value_object::token::{Session, SessionInterface},
 };
@@ -13,8 +11,6 @@ use sqlx::{
     types::chrono::{Local, NaiveDateTime},
     Acquire, Pool, Postgres,
 };
-
-use super::session_repository::SessionRepositoryImpl;
 
 #[derive(Clone, Debug)]
 pub struct UserRepositoryImpl {
@@ -121,8 +117,6 @@ impl UserRepository for UserRepositoryImpl {
     }
 
     async fn create(&self, user: User) -> Result<(User, Session), String> {
-        let token_repo = SessionRepositoryImpl::new(self.db.clone());
-
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         let mut tx = conn.begin().await.unwrap();
@@ -137,8 +131,6 @@ impl UserRepository for UserRepositoryImpl {
 
         match create_user_result {
             Ok(create_user) => {
-                // let toke_result = token_repo.create(&create_user.id).await;
-
                 let session_input_data =
                     Session::new(&create_user.id, "", "", &Local::now().naive_local()).create();
 

@@ -26,8 +26,8 @@ impl Query {
     ) -> Result<GetUser> {
         let db = ctx.data::<Db>().unwrap().0.clone();
         let repo = RepositoryImpls::new(db);
-        let user_repo = UserInteractor::new(&repo);
-        let user = user_repo.get_user(&id).await.unwrap();
+        let user_usecase = UserInteractor::new(&repo);
+        let user = user_usecase.get_user(&id).await.unwrap();
         let user = GetUser {
             id: user.0.id,
             username: user.1.username,

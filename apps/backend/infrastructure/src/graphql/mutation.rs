@@ -1,10 +1,6 @@
 use async_graphql::{Context, Object, SimpleObject};
-use domain::{
-    infrastructure::interface::repository::{
-        repository_interface::Repositories, user_repository_interface::UserRepository,
-    },
-    models::{interface::user_interface::UserTrait, user::User},
-};
+use domain::infrastructure::interface::repository::repository_interface::Repositories;
+use usecase::user::usecase::UserInteractor;
 
 use crate::{db::persistence::postgres::Db, repository::repository_impl::RepositoryImpls};
 
@@ -28,29 +24,21 @@ impl Mutation {
         #[graphql(desc = "password of object")] password: String,
     ) -> Result<CreateUser, String> {
         let db = ctx.data::<Db>().unwrap().0.clone();
-        // let repo = UserRepositoryImpl::new(db);
         let repo = RepositoryImpls::new(db);
 
-        let user_repo = repo.user_repo();
+        let user_usecase = UserInteractor::new(&repo);
 
-        // let user_repo = UserInteractor::new(&repo);
+        let create_user = user_usecase
+            .create_user(&username, &password)
+            .await
+            .unwrap();
 
-        let user = User::new("", &username, &password).unwrap();
-
-        let create_user = user_repo.create(user).await;
-
-        match create_user {
-            Ok(user) => {
-                let user = CreateUser {
-                    id: user.0 .0.id,
-                    username: user.0 .1.username,
-                    password: user.0 .1.password,
-                    access_token: user.1.access_token,
-                    refresh_token: user.1.refresh_token,
-                };
-                Ok(user)
-            }
-            Err(e) => Err(e.to_string()),
-        }
+        Ok(CreateUser {
+            id: create_user.0 .0.id,
+            username: create_user.0 .1.username,
+            password: create_user.0 .1.password,
+            access_token: create_user.1.access_token,
+            refresh_token: create_user.1.refresh_token,
+        })
     }
 }
