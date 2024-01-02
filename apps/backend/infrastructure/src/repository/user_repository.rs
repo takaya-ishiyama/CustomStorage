@@ -80,7 +80,7 @@ impl UserRepository for UserRepositoryImpl {
         let user = sqlx::query_as::<_, FindWithToken>(
             "
                 SELECT
-                    users.user_id,
+                    users.id,
                     users.username,
                     session.access_token,
                     session.refresh_token,
@@ -88,7 +88,7 @@ impl UserRepository for UserRepositoryImpl {
                 FROM
                     session
                 JOIN
-                    users ON session.user_id = users.id;
+                    users ON session.user_id = users.id
                 WHERE
                     session.access_token = $1;
             ",
@@ -215,6 +215,25 @@ mod tests {
             user.0 .1.username,
             "test_user_repository_create".to_string()
         );
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn test_user_repository_find_with_token() -> sqlx::Result<()> {
+        let pool = setup_database().await;
+        let db = Arc::new(pool);
+        let repo = UserRepositoryImpl::new(db);
+
+        let data = User::new("", "test_user", "password").unwrap();
+        let create_user = repo.create(data).await.unwrap();
+
+        let user = repo
+            .find_with_token(&create_user.1.access_token)
+            .await
+            .unwrap();
+
+        assert_eq!(user.0.id, create_user.0 .0.id);
 
         Ok(())
     }
