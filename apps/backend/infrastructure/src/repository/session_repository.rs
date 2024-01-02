@@ -153,13 +153,15 @@ impl SessionRepository for SessionRepositoryImpl {
 #[cfg(test)]
 mod tests {
 
+    use sqlx::PgPool;
+
     use crate::test::{setup_testdb::setup_database, test_data::get_test_user};
 
     use super::*;
 
     #[sqlx::test]
-    async fn test_session_repository_create() -> sqlx::Result<()> {
-        let pool = setup_database().await;
+    async fn test_session_repository_create(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
         let db = Arc::new(pool);
         let repo = SessionRepositoryImpl::new(db);
 
@@ -173,8 +175,8 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn test_session_repository_get_access_token() -> sqlx::Result<()> {
-        let pool = setup_database().await;
+    async fn test_session_repository_get_access_token(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
         let db = Arc::new(pool);
         let repo = SessionRepositoryImpl::new(db);
 
@@ -193,8 +195,8 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn test_session_repository_update() -> sqlx::Result<()> {
-        let pool = setup_database().await;
+    async fn test_session_repository_update(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
         let db = Arc::new(pool);
         let repo = SessionRepositoryImpl::new(db);
 

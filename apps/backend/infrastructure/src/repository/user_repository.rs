@@ -196,13 +196,15 @@ impl UserRepository for UserRepositoryImpl {
 #[cfg(test)]
 mod tests {
 
+    use sqlx::PgPool;
+
     use crate::test::setup_testdb::setup_database;
 
     use super::*;
 
     #[sqlx::test]
-    async fn test_user_repository_find_by_id() -> sqlx::Result<()> {
-        let pool = setup_database().await;
+    async fn test_user_repository_find_by_id(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
         let db = Arc::new(pool);
         let repo = UserRepositoryImpl::new(db);
 
@@ -219,8 +221,8 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn test_user_repository_create() -> sqlx::Result<()> {
-        let pool = setup_database().await;
+    async fn test_user_repository_create(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
         let db = Arc::new(pool);
         let repo = UserRepositoryImpl::new(db);
 
@@ -237,8 +239,8 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn test_user_repository_find_with_token() -> sqlx::Result<()> {
-        let pool = setup_database().await;
+    async fn test_user_repository_find_with_token(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
         let db = Arc::new(pool);
         let repo = UserRepositoryImpl::new(db);
 
