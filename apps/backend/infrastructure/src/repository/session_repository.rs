@@ -18,7 +18,14 @@ pub struct SessionRepositoryImpl {
 
 #[derive(FromRow)]
 struct CreateToken {
-    // id: i32,
+    user_id: String,
+    access_token: String,
+    refresh_token: String,
+    expiration_timestamp: NaiveDateTime,
+}
+
+#[derive(FromRow)]
+struct GetAccessTokenByRefreshToken {
     user_id: String,
     access_token: String,
     refresh_token: String,
@@ -64,6 +71,39 @@ impl SessionRepository for SessionRepositoryImpl {
             }
         }
     }
+
+    async fn get_access_token_by_refresh_token(
+        &self,
+        refresh_token: &str,
+    ) -> Result<Session, String> {
+        let mut pool = self.db.acquire().await.unwrap();
+        let conn = pool.acquire().await.unwrap();
+
+        let mut tx = conn.begin().await.unwrap();
+
+        let session_result = sqlx::query_as::<_, GetAccessTokenByRefreshToken>(
+            "SELECT * FROM session WHERE refresh_token = $1",
+        )
+        .bind(refresh_token)
+        .fetch_one(&mut *tx)
+        .await;
+
+        match session_result {
+            Ok(session) => {
+                tx.commit().await.unwrap();
+                Ok(Session::new(
+                    &session.user_id,
+                    &session.access_token,
+                    &session.refresh_token,
+                    &session.expiration_timestamp,
+                ))
+            }
+            Err(e) => {
+                tx.rollback().await.unwrap();
+                Err("session not found: ".to_string() + &e.to_string())
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -84,6 +124,26 @@ mod tests {
         let session = repo.create(test_user_id.as_str()).await.unwrap();
 
         assert_eq!(session.user_id, "17b5ac0c-1429-469a-8522-053f7bf0f80d");
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn test_session_repository_get_access_token() -> sqlx::Result<()> {
+        let pool = setup_database().await;
+        let db = Arc::new(pool);
+        let repo = SessionRepositoryImpl::new(db);
+
+        let test_user_id = get_test_user()[0].clone().0.id;
+
+        let create_session = repo.create(test_user_id.as_str()).await.unwrap();
+
+        let session = repo
+            .get_access_token_by_refresh_token(create_session.refresh_token.as_str())
+            .await
+            .unwrap();
+
+        assert_eq!(session.access_token, create_session.access_token);
 
         Ok(())
     }

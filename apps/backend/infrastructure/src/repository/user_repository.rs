@@ -97,23 +97,28 @@ impl UserRepository for UserRepositoryImpl {
         .fetch_one(conn)
         .await;
 
-        let user = match user {
+        let user_with_session = match user {
             Ok(user) => user,
             Err(err) => panic!("{}", "user not found. ".to_string() + &err.to_string()),
         };
 
         let token = Session::new(
-            &user.id,
-            &user.access_token,
-            &user.refresh_token,
-            &user.expiration_timestamp,
+            &user_with_session.id,
+            &user_with_session.access_token,
+            &user_with_session.refresh_token,
+            &user_with_session.expiration_timestamp,
         );
 
         if !token.check_expiration() {
             return Err("token is expired".to_string());
         }
 
-        Ok(UserTrait::new(&user.id, &user.username, &user.password).unwrap())
+        Ok(UserTrait::new(
+            &user_with_session.id,
+            &user_with_session.username,
+            &user_with_session.password,
+        )
+        .unwrap())
     }
 
     async fn create(&self, user: User) -> Result<(User, Session), String> {
