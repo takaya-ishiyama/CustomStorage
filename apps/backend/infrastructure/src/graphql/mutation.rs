@@ -1,6 +1,6 @@
 use async_graphql::{Context, Object, SimpleObject};
 use domain::infrastructure::interface::repository::repository_interface::Repositories;
-use usecase::user::usecase::UserInteractor;
+use usecase::{session::usecase::SessionInteractor, user::usecase::UserInteractor};
 
 use crate::{db::persistence::postgres::Db, repository::repository_impl::RepositoryImpls};
 
@@ -14,6 +14,8 @@ struct CreateUser {
     access_token: String,
     refresh_token: String,
 }
+
+pub struct Token(pub String);
 
 #[Object]
 impl Mutation {
@@ -40,5 +42,28 @@ impl Mutation {
             access_token: create_user.1.access_token,
             refresh_token: create_user.1.refresh_token,
         })
+    }
+
+    async fn get_new_access_token<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        #[graphql(desc = "refresh_token of object")] refresh_token: String,
+    ) -> Result<String, String> {
+        let token = ctx.data_opt::<Token>().map(|token| token.0.as_str());
+        if token.is_none() {
+            return Err("token is none".to_string());
+        }
+
+        let db = ctx.data::<Db>().unwrap().0.clone();
+        let repo = RepositoryImpls::new(db);
+
+        let session_usecase = SessionInteractor::new(&repo);
+
+        let session = session_usecase
+            .update_access_token(&refresh_token)
+            .await
+            .unwrap();
+
+        Ok(session.access_token)
     }
 }

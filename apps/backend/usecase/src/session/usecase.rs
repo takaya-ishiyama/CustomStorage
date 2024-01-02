@@ -1,19 +1,16 @@
-use chrono::Local;
 use domain::{
     infrastructure::interface::repository::{
         repository_interface::Repositories, session_repository_interface::SessionRepository,
-        user_repository_interface::UserRepository,
     },
-    models::{interface::user_interface::UserTrait, user::User},
     value_object::token::{Session, SessionInterface},
 };
 
 #[derive(Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
-pub struct UserInteractor<'r, R: Repositories> {
+pub struct SessionInteractor<'r, R: Repositories> {
     session_repo: &'r R::SessionRepo,
 }
 
-impl<'r, R: Repositories> UserInteractor<'r, R> {
+impl<'r, R: Repositories> SessionInteractor<'r, R> {
     pub fn new(repositories: &'r R) -> Self {
         Self {
             session_repo: repositories.session_repo(),
