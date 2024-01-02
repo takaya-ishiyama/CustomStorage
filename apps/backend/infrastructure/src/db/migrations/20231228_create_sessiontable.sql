@@ -1,6 +1,6 @@
 CREATE TABLE session (
     id SERIAL PRIMARY KEY,
-    user_id VARCHAR(36) REFERENCES users(id),
+    user_id VARCHAR(36) REFERENCES users(id) UNIQUE,
     access_token VARCHAR(255) NOT NULL,
     refresh_token VARCHAR(255),
     expiration_timestamp TIMESTAMP NOT NULL,
