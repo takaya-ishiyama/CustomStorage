@@ -1,7 +1,8 @@
 use chrono::Local;
 use domain::{
     infrastructure::interface::repository::{
-        repository_interface::Repositories, user_repository_interface::UserRepository,
+        repository_interface::Repositories, session_repository_interface::SessionRepository,
+        user_repository_interface::UserRepository,
     },
     models::{interface::user_interface::UserTrait, user::User},
     value_object::token::{Session, SessionInterface},
@@ -10,12 +11,14 @@ use domain::{
 #[derive(Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 pub struct UserInteractor<'r, R: Repositories> {
     user_repo: &'r R::UserRepo,
+    session_repo: &'r R::SessionRepo,
 }
 
 impl<'r, R: Repositories> UserInteractor<'r, R> {
     pub fn new(repositories: &'r R) -> Self {
         Self {
             user_repo: repositories.user_repo(),
+            session_repo: repositories.session_repo(),
         }
     }
 
@@ -48,7 +51,7 @@ impl<'r, R: Repositories> UserInteractor<'r, R> {
         )
         .unwrap();
 
-        let session = Session::new(
+        let input_session = Session::new(
             &user.0.id,
             "",
             "",
@@ -56,6 +59,8 @@ impl<'r, R: Repositories> UserInteractor<'r, R> {
             &Local::now().naive_local(),
         )
         .create();
+
+        let session = self.session_repo.upsert(&input_session).await.unwrap();
 
         Ok((user, session))
     }
