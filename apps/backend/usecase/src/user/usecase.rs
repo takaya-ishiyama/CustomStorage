@@ -1,9 +1,10 @@
+use chrono::Local;
 use domain::{
     infrastructure::interface::repository::{
         repository_interface::Repositories, user_repository_interface::UserRepository,
     },
     models::{interface::user_interface::UserTrait, user::User},
-    value_object::token::Session,
+    value_object::token::{Session, SessionInterface},
 };
 
 #[derive(Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -33,16 +34,29 @@ impl<'r, R: Repositories> UserInteractor<'r, R> {
         Ok(created_user)
     }
 
-    // pub async fn login(&self, username: &str, password: &str) -> Result<(User, Session), String> {
-    //     let user = self.user_repo.find_by_username(username).await.unwrap();
-    //     let user = User::new(&user.id, &user.username, &user.password).unwrap();
-    //     let session = Session::new(
-    //         &user.id,
-    //         &user.access_token,
-    //         &user.refresh_token,
-    //         &user.expiration_timestamp,
-    //         &user.expiration_timestamp_for_refresh,
-    //     );
-    //     Ok((user, session))
-    // }
+    pub async fn login(&self, username: &str, password: &str) -> Result<(User, Session), String> {
+        let find_user = self
+            .user_repo
+            .find_by_username_and_password(username, password)
+            .await
+            .unwrap();
+
+        let user = User::new(
+            &find_user.0.id,
+            &find_user.1.username,
+            &find_user.1.password,
+        )
+        .unwrap();
+
+        let session = Session::new(
+            &user.0.id,
+            "",
+            "",
+            &Local::now().naive_local(),
+            &Local::now().naive_local(),
+        )
+        .create();
+
+        Ok((user, session))
+    }
 }

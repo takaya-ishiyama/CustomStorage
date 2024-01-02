@@ -148,6 +148,47 @@ impl SessionRepository for SessionRepositoryImpl {
             }
         }
     }
+
+    async fn upsert(&self, session: &Session) -> Result<Session, String> {
+        let mut pool = self.db.acquire().await.unwrap();
+        let conn = pool.acquire().await.unwrap();
+
+        let mut tx = conn.begin().await.unwrap();
+
+        let session_result = sqlx::query_as::<_, GetAccessTokenByRefreshToken>(
+            "
+            INSERT INTO session (user_id, access_token, refresh_token, expiration_timestamp, expiration_timestamp_for_refresh) 
+            VALUES ($1, $2, $3, $4, $5) 
+            ON CONFLICT (user_id) 
+            DO UPDATE SET access_token = $2, refresh_token = $3, expiration_timestamp = $4, expiration_timestamp_for_refresh = $5 
+            RETURNING *
+            ",
+        )
+        .bind(&session.user_id)
+        .bind(&session.access_token)
+        .bind(&session.refresh_token)
+        .bind(session.expiration_timestamp)
+        .bind(session.expiration_timestamp_for_refresh)
+        .fetch_one(&mut *tx)
+        .await;
+
+        match session_result {
+            Ok(session) => {
+                tx.commit().await.unwrap();
+                Ok(Session::new(
+                    &session.user_id,
+                    &session.access_token,
+                    &session.refresh_token,
+                    &session.expiration_timestamp,
+                    &session.expiration_timestamp_for_refresh,
+                ))
+            }
+            Err(e) => {
+                tx.rollback().await.unwrap();
+                Err("session not found: ".to_string() + &e.to_string())
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -228,6 +269,83 @@ mod tests {
 
         assert_eq!(session.access_token, input_session.access_token);
         assert_eq!(session.refresh_token, create_session.refresh_token);
+        assert!(exp_diff.num_seconds() < 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn test_session_repository_upsert_create(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
+        let db = Arc::new(pool);
+        let repo = SessionRepositoryImpl::new(db);
+
+        let test_user_id = get_test_user()[0].clone().0.id;
+
+        let create_session = repo.create(test_user_id.as_str()).await.unwrap();
+
+        let input_session = Session::new(
+            &create_session.user_id,
+            "",
+            "",
+            &Local::now().naive_local(),
+            &Local::now().naive_local(),
+        )
+        .create();
+
+        let session = repo
+            .upsert(&Session::new(
+                &create_session.user_id,
+                &input_session.access_token,
+                &create_session.refresh_token,
+                &input_session.expiration_timestamp,
+                &input_session.expiration_timestamp_for_refresh,
+            ))
+            .await
+            .unwrap();
+
+        let exp_diff = session.expiration_timestamp - input_session.expiration_timestamp;
+
+        assert_eq!(session.access_token, input_session.access_token);
+        assert_eq!(session.refresh_token, create_session.refresh_token);
+        assert!(exp_diff.num_seconds() < 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn test_session_repository_upsert_update(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
+        let db = Arc::new(pool);
+        let repo = SessionRepositoryImpl::new(db);
+
+        let test_user_id = get_test_user()[0].clone().0.id;
+
+        let input_session = Session::new(
+            &test_user_id,
+            "",
+            "",
+            &Local::now().naive_local(),
+            &Local::now().naive_local(),
+        )
+        .create();
+
+        let session = repo
+            .upsert(&Session::new(
+                &test_user_id,
+                &input_session.access_token,
+                &input_session.refresh_token,
+                &input_session.expiration_timestamp,
+                &input_session.expiration_timestamp_for_refresh,
+            ))
+            .await
+            .unwrap();
+
+        let exp_diff = session.expiration_timestamp - input_session.expiration_timestamp;
+
+        assert_eq!(session.user_id, test_user_id);
+        assert_eq!(session.access_token, input_session.access_token);
+        assert_eq!(session.refresh_token, input_session.refresh_token);
         assert!(exp_diff.num_seconds() < 1);
 
         Ok(())

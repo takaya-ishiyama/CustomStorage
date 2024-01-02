@@ -13,4 +13,5 @@ pub trait SessionRepository {
     async fn create(&self, user_id: &str) -> Result<Session, String>;
     async fn find_by_refresh_token(&self, refresh_token: &str) -> Result<Session, String>;
     async fn update(&self, session: &Session) -> Result<Session, String>;
+    async fn upsert(&self, session: &Session) -> Result<Session, String>;
 }
