@@ -39,7 +39,7 @@ impl SessionInterface for Session {
         let refresh_token = generate_token();
         let expiration_timestamp = Local::now()
             .naive_local()
-            .checked_add_signed(chrono::Duration::hours(1))
+            .checked_add_signed(chrono::Duration::hours(12))
             .unwrap();
 
         Self {

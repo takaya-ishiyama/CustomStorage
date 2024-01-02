@@ -15,4 +15,5 @@ pub trait SessionRepository {
         &self,
         refresh_token: &str,
     ) -> Result<Session, String>;
+    async fn update(&self, session: &Session) -> Result<Session, String>;
 }

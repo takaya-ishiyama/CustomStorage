@@ -37,6 +37,7 @@ impl SessionRepository for SessionRepositoryImpl {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
         Self { db }
     }
+    /** 使ってない。使うときは、user_idが一致する場合は、updateするようにするかエラーを返すようにする */
     async fn create(&self, user_id: &str) -> Result<Session, String> {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
@@ -104,10 +105,47 @@ impl SessionRepository for SessionRepositoryImpl {
             }
         }
     }
+
+    async fn update(&self, session: &Session) -> Result<Session, String> {
+        let mut pool = self.db.acquire().await.unwrap();
+        let conn = pool.acquire().await.unwrap();
+
+        let mut tx = conn.begin().await.unwrap();
+
+        let session_result = sqlx::query_as::<_, GetAccessTokenByRefreshToken>(
+            "UPDATE session SET access_token = $1, refresh_token = $2, expiration_timestamp = $3 WHERE user_id = $4 RETURNING *",
+        )
+        .bind(&session.access_token)
+        .bind(&session.refresh_token)
+        .bind(session.expiration_timestamp)
+        .bind(&session.user_id)
+        .fetch_one(&mut *tx)
+        .await;
+
+        match session_result {
+            Ok(session) => {
+                tx.commit().await.unwrap();
+                Ok(Session::new(
+                    &session.user_id,
+                    &session.access_token,
+                    &session.refresh_token,
+                    &session.expiration_timestamp,
+                ))
+            }
+            Err(e) => {
+                tx.rollback().await.unwrap();
+                Err("session not found: ".to_string() + &e.to_string())
+            }
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
+
+    use std::time::{Duration, SystemTime};
+
+    use sqlx::types::chrono::{DateTime, Utc};
 
     use crate::test::{setup_testdb::setup_database, test_data::get_test_user};
 
@@ -144,6 +182,38 @@ mod tests {
             .unwrap();
 
         assert_eq!(session.access_token, create_session.access_token);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn test_session_repository_update() -> sqlx::Result<()> {
+        let pool = setup_database().await;
+        let db = Arc::new(pool);
+        let repo = SessionRepositoryImpl::new(db);
+
+        let test_user_id = get_test_user()[0].clone().0.id;
+
+        let create_session = repo.create(test_user_id.as_str()).await.unwrap();
+
+        let input_session =
+            Session::new(&create_session.user_id, "", "", &Local::now().naive_local()).create();
+
+        let session = repo
+            .update(&Session::new(
+                &create_session.user_id,
+                &input_session.access_token,
+                &create_session.refresh_token,
+                &input_session.expiration_timestamp,
+            ))
+            .await
+            .unwrap();
+
+        let exp_diff = session.expiration_timestamp - input_session.expiration_timestamp;
+
+        assert_eq!(session.access_token, input_session.access_token);
+        assert_eq!(session.refresh_token, create_session.refresh_token);
+        assert!(exp_diff.num_seconds() < 1);
 
         Ok(())
     }
