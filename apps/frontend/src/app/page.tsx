@@ -12,12 +12,14 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { Header } from "./components/organisms/Header";
+import { base_uri } from "@/infrastructure/Query/backendUri";
 
 export default function MyApp() {
 	const router = useRouter();
 	const handleClickGoHomePage = () => {
 		router.push("/home");
 	};
+
 	return (
 		<>
 			<Header />
