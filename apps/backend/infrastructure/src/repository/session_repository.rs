@@ -34,6 +34,15 @@ struct GetAccessTokenByRefreshToken {
     expiration_timestamp_for_refresh: NaiveDateTime,
 }
 
+#[derive(FromRow)]
+struct FindByRefreshToken {
+    user_id: String,
+    access_token: String,
+    refresh_token: String,
+    expiration_timestamp: NaiveDateTime,
+    expiration_timestamp_for_refresh: NaiveDateTime,
+}
+
 #[async_trait]
 impl SessionRepository for SessionRepositoryImpl {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
@@ -90,7 +99,7 @@ impl SessionRepository for SessionRepositoryImpl {
 
         let mut tx = conn.begin().await.unwrap();
 
-        let session_result = sqlx::query_as::<_, GetAccessTokenByRefreshToken>(
+        let session_result = sqlx::query_as::<_, FindByRefreshToken>(
             "SELECT * FROM session WHERE refresh_token = $1",
         )
         .bind(refresh_token)
@@ -98,15 +107,20 @@ impl SessionRepository for SessionRepositoryImpl {
         .await;
 
         match session_result {
-            Ok(session) => {
+            Ok(_session) => {
+                let session = Session::new(
+                    &_session.user_id,
+                    &_session.access_token,
+                    &_session.refresh_token,
+                    &_session.expiration_timestamp,
+                    &_session.expiration_timestamp_for_refresh,
+                );
+                if !session.check_expiration_for_refresh() {
+                    return Err("refresh token is expired".to_string());
+                }
+
                 tx.commit().await.unwrap();
-                Ok(Session::new(
-                    &session.user_id,
-                    &session.access_token,
-                    &session.refresh_token,
-                    &session.expiration_timestamp,
-                    &session.expiration_timestamp_for_refresh,
-                ))
+                Ok(session)
             }
             Err(e) => {
                 tx.rollback().await.unwrap();
