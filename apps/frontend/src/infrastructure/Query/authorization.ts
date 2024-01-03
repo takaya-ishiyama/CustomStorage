@@ -122,19 +122,21 @@ type MutationLogin = ({
 export const useLogin: MutationLogin = ({ options }) => {
 	return useMutation(async (input: LoginRequest): Promise<LoginResult> => {
 		const resp = await login(input.username, input.password);
-		if (resp.ok) {
-			const tokenData = await resp.json();
-			setCookie(null, "accessToken", tokenData.access, {
-				maxAge: 60 * 60 * 60 /*30min X 60second*/,
-			});
-			setCookie(null, "refreshToken", tokenData.refresh, {
-				maxAge: 24 * 60 * 60 * 60 /* 24h X 60min X 60second*/,
-			});
-		}
 		if (!resp.ok) {
 			throw new Error(`HTTP error! Status: ${resp.status}`);
 		}
-		const { data } = (await resp.json()) as { data: LoginResult };
-		return data;
+
+		const {
+			data: { login: loginResult },
+		} = (await resp.json()) as { data: { login: LoginResult } };
+
+		setCookie(null, "accessToken", loginResult.accessToken, {
+			maxAge: 60 * 60 * 60 /*30min X 60second*/,
+		});
+		setCookie(null, "refreshToken", loginResult.refreshToken, {
+			maxAge: 24 * 60 * 60 * 60 /* 24h X 60min X 60second*/,
+		});
+
+		return loginResult;
 	}, options);
 };

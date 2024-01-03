@@ -11,7 +11,7 @@ export const MainContents = () => {
 	// 	console.log("aaaa", data);
 	// }, [data]);
 
-	const { mutate } = useLogin({});
+	const { mutate, data: loginUser } = useLogin({});
 
 	const handleClickLogin = () => {
 		mutate({
@@ -23,6 +23,7 @@ export const MainContents = () => {
 	return (
 		<div>
 			<Button onClick={handleClickLogin}>{"aaaaa"}</Button>
+			{loginUser ? <div>{loginUser?.username}</div> : <></>}
 		</div>
 	);
 };
