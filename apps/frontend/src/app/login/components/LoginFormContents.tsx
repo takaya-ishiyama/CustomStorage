@@ -1,15 +1,40 @@
 import { InputWithRHF } from "@/app/components/molecules/InputWithRFH";
 import React from "react";
-import { LoginForm } from "../hooks/LoginForm";
+import { Box, Button } from "@mui/material";
+import { useForm } from "react-hook-form";
+import { useLoginForm } from "../hooks/useLoginForm";
+import { useMutateLoginUser } from "../hooks/useMutateLoginUser";
+import { useHandleAfter } from "../hooks/useHandleAfter";
 
 export const LoginFormContents = () => {
 	const {
 		control,
 		formState: { errors, isLoading },
-	} = LoginForm();
+		handleSubmit: handleSubmitWrapper,
+	} = useLoginForm();
+
+	const { onError, onSuccess } = useHandleAfter();
+
+	const {
+		handleClickLogin,
+		data,
+		isSuccess,
+		isLoading: isSubimit,
+	} = useMutateLoginUser({
+		onError,
+		onSuccess,
+	});
+
+	const handleSubmit = () => {
+		handleSubmitWrapper(async ({ username, password }) =>
+			handleClickLogin({ username, password }),
+		);
+	};
 	return (
-		<div>
-			<InputWithRHF control={control} name={"name"} />
-		</div>
+		<Box>
+			<InputWithRHF control={control} name={"username"} />
+			<InputWithRHF control={control} name={"password"} />
+			<Button onClick={handleSubmit}>{"送信"}</Button>
+		</Box>
 	);
 };

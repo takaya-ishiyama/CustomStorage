@@ -1,13 +1,15 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { initValue } from "./validate";
 
 type User = {
-	name: string;
+	username: string;
 	password: string;
 };
 
-export const LoginForm = () => {
+export const useLoginForm = () => {
 	const form = useForm<User>({
+		defaultValues: initValue,
 		reValidateMode: "onChange",
 	});
 	return form;

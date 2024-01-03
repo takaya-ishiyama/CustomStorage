@@ -2,13 +2,13 @@
 
 import React from "react";
 import { ProviderWrapper } from "../hooks";
-import { Header } from "../components/organisms/Header";
 import { LoginFormContents } from "./components/LoginFormContents";
+import { CustomHeader } from "../components/features/CustomHeader";
 
 const page = () => {
 	return (
 		<ProviderWrapper>
-			<Header />
+			<CustomHeader />
 			<LoginFormContents />
 		</ProviderWrapper>
 	);

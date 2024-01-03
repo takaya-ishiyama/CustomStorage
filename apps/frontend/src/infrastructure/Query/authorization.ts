@@ -94,7 +94,7 @@ type LoginRequest = {
 	username: string;
 	password: string;
 };
-type LoginResult = {
+export type LoginResult = {
 	id: string;
 	username: string;
 	accessToken: string;
