@@ -13,7 +13,7 @@ type LoginInputProps = {
 };
 
 export const useMutateLoginUser = ({ onSuccess, onError }: Props) => {
-	const { mutate, data, isSuccess, isLoading } = useLogin({});
+	const { mutate, isSuccess, isLoading } = useLogin({});
 
 	const handleClickLogin = React.useCallback(
 		({ username, password }: LoginInputProps) => {
@@ -34,7 +34,6 @@ export const useMutateLoginUser = ({ onSuccess, onError }: Props) => {
 
 	return {
 		handleClickLogin,
-		data,
 		isSuccess,
 		isLoading,
 	};

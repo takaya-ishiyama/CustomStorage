@@ -17,7 +17,6 @@ export const LoginFormContents = () => {
 
 	const {
 		handleClickLogin,
-		data,
 		isSuccess,
 		isLoading: isSubimit,
 	} = useMutateLoginUser({
@@ -25,15 +24,15 @@ export const LoginFormContents = () => {
 		onSuccess,
 	});
 
-	const handleSubmit = () => {
-		handleSubmitWrapper(async ({ username, password }) =>
-			handleClickLogin({ username, password }),
-		);
-	};
+	const handleSubmit = handleSubmitWrapper(({ username, password }) =>
+		handleClickLogin({ username, password }),
+	);
+
 	return (
 		<Box>
 			<InputWithRHF control={control} name={"username"} />
 			<InputWithRHF control={control} name={"password"} />
+			<Box>{errors.username?.message}</Box>
 			<Button onClick={handleSubmit}>{"送信"}</Button>
 		</Box>
 	);
