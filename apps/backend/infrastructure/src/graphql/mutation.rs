@@ -24,6 +24,12 @@ struct Login {
     refresh_token: String,
 }
 
+#[derive(SimpleObject)]
+struct GetNewAccessToken {
+    access_token: String,
+    refresh_token: String,
+}
+
 pub struct Token(pub String);
 
 #[Object]
@@ -53,11 +59,7 @@ impl Mutation {
         })
     }
 
-    async fn get_new_access_token<'ctx>(
-        &self,
-        ctx: &Context<'ctx>,
-        #[graphql(desc = "refresh_token of object")] refresh_token: String,
-    ) -> Result<String, String> {
+    async fn get_new_token<'ctx>(&self, ctx: &Context<'ctx>) -> Result<GetNewAccessToken, String> {
         let token = ctx.data_opt::<Token>().map(|token| token.0.as_str());
         if token.is_none() {
             return Err("token is none".to_string());
@@ -68,12 +70,12 @@ impl Mutation {
 
         let session_usecase = SessionInteractor::new(&repo);
 
-        let session = session_usecase
-            .update_access_token(&refresh_token)
-            .await
-            .unwrap();
+        let session = session_usecase.update_token(token.unwrap()).await.unwrap();
 
-        Ok(session.access_token)
+        Ok(GetNewAccessToken {
+            access_token: session.access_token,
+            refresh_token: session.refresh_token,
+        })
     }
 
     async fn login<'ctx>(

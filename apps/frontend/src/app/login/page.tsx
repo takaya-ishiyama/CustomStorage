@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { ProviderWrapper } from "../hooks";
-import { LoginFormContents } from "./components/LoginFormContents";
 import { CustomHeader } from "../components/features/CustomHeader";
+import { ProviderWrapper } from "../hooks/ProviderWrapper";
+import { LoginFormContents } from "./components/LoginFormContents";
 
 const page = () => {
 	return (

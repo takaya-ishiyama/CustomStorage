@@ -17,7 +17,7 @@ impl<'r, R: Repositories> SessionInteractor<'r, R> {
         }
     }
 
-    pub async fn update_access_token(&self, refresh_token: &str) -> Result<Session, String> {
+    pub async fn update_token(&self, refresh_token: &str) -> Result<Session, String> {
         let session = self
             .session_repo
             .find_by_refresh_token(refresh_token)
@@ -35,11 +35,20 @@ impl<'r, R: Repositories> SessionInteractor<'r, R> {
         let input_session = Session::new(
             &session.user_id,
             &create_new_session.access_token,
-            &session.refresh_token,
+            &create_new_session.refresh_token,
             &create_new_session.expiration_timestamp,
-            &session.expiration_timestamp_for_refresh,
+            &create_new_session.expiration_timestamp_for_refresh,
         );
         let session = self.session_repo.update(&input_session).await.unwrap();
+        Ok(session)
+    }
+
+    pub async fn get_access_token(&self, refresh_token: &str) -> Result<Session, String> {
+        let session = self
+            .session_repo
+            .find_by_refresh_token(refresh_token)
+            .await
+            .unwrap();
         Ok(session)
     }
 }

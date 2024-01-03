@@ -64,4 +64,9 @@ impl<'r, R: Repositories> UserInteractor<'r, R> {
 
         Ok((user, session))
     }
+
+    pub async fn login_with_token(&self, token: &str) -> Result<User, String> {
+        let user = self.user_repo.find_with_token(token).await.unwrap();
+        Ok(user)
+    }
 }

@@ -10,3 +10,18 @@ export const mutation = {
 	}
   `,
 };
+
+export const query = {
+	login_with_token: () => `
+		query {
+			loginWithToken {
+				id
+				username
+			}
+		`,
+	get_access_token: () => `
+	query{
+		getNewAccessToken
+	}
+	`,
+};

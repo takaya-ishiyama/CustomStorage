@@ -1,10 +1,13 @@
 import { destroyCookie, parseCookies, setCookie } from "nookies";
 import { base_uri } from "./backendUri";
-import { mutation } from "../graphql/schema";
+import { mutation, query } from "../graphql/schema";
 import {
 	UseMutationOptions,
 	UseMutationResult,
+	UseQueryOptions,
+	UseQueryResult,
 	useMutation,
+	useQuery,
 } from "react-query";
 import { AxiosError } from "axios";
 
@@ -24,24 +27,30 @@ export const login = (
 };
 
 const fetchNewToken = (): Promise<Response> => {
+	const shcema = query.get_access_token();
 	const cookies = parseCookies();
 	return fetch(base_uri, {
-		method: "POST",
-		body: JSON.stringify(cookies.refreshToken),
+		method: "Get",
 		headers: {
 			Accept: "application/json",
 			"Content-Type": "application/json",
+			Authorization: `${cookies.refreshToken}`,
 		},
+		body: JSON.stringify({ query: shcema }),
 	});
 };
 
 async function fetchUserByAccessToken(): Promise<Response> {
+	const shcema = query.login_with_token();
 	const cookies = parseCookies();
 	return fetch(base_uri, {
 		method: "GET",
 		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
 			Authorization: `${cookies.accessToken}`,
 		},
+		body: JSON.stringify({ query: shcema }),
 	});
 }
 
@@ -139,4 +148,46 @@ export const useLogin: MutationLogin = ({ options }) => {
 
 		return loginResult;
 	}, options);
+};
+
+export const useQueryReceipts = (
+	options?: UseQueryOptions<unknown, AxiosError, LoginResult>,
+): UseQueryResult<LoginResult, AxiosError> => {
+	const cookies = parseCookies();
+
+	return useQuery(
+		["login"],
+		async (): Promise<LoginResult> => {
+			if (cookies.accessToken) {
+				const resp = await fetchUserByAccessToken();
+				if (!resp.ok) {
+					throw new Error(`HTTP error! Status: ${resp.status}`);
+				}
+				const {
+					data: { login: loginResult },
+				} = (await resp.json()) as { data: { login: LoginResult } };
+
+				return loginResult;
+			}
+			if (cookies.refreshToken) {
+				// リフレッシュトークンがあればアクセストークンをとってきてユーザー認証
+				const resp = await fetchNewToken();
+				const {
+					data: { getNewAccessToken },
+				} = await resp.json();
+				if (resp.ok) {
+					setCookie(null, "accessToken", tokenData.access, {
+						maxAge: 60 * 60 /*60min X 60second*/,
+					});
+					setCookie(null, "refreshToken", tokenData.refresh, {
+						maxAge: 24 * 60 * 60 /* 24h X 60min X 60second*/,
+					});
+					const user = await fetchUserByAccessToken();
+					return user;
+				}
+				return;
+			}
+		},
+		options,
+	);
 };

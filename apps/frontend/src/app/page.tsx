@@ -13,12 +13,15 @@ import {
 import { useRouter } from "next/navigation";
 import { base_uri } from "@/infrastructure/Query/backendUri";
 import { CustomHeader } from "./components/features/CustomHeader";
+import React from "react";
 
 export default function MyApp() {
 	const router = useRouter();
 	const handleClickGoHomePage = () => {
 		router.push("/home");
 	};
+
+	React.useEffect(() => {}, []);
 
 	return (
 		<>
