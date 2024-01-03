@@ -1,16 +1,15 @@
 "use client";
 
 import React from "react";
-import { MainContents } from "./components/MainContents";
-import { QueryClient, QueryClientProvider } from "react-query";
 import { ProviderWrapper } from "../hooks";
 import { Header } from "../components/organisms/Header";
+import { LoginFormContents } from "./components/LoginFormContents";
 
 const page = () => {
 	return (
 		<ProviderWrapper>
 			<Header />
-			<MainContents />
+			<LoginFormContents />
 		</ProviderWrapper>
 	);
 };

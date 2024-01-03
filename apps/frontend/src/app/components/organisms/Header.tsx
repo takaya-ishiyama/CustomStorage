@@ -4,7 +4,7 @@ import React from "react";
 import { AppBar } from "../atom/AppBar";
 
 type Props = {
-	onClickMenue?: () => void;
+	onClickMenue?: React.MouseEventHandler<HTMLButtonElement> | undefined;
 };
 
 export const Header: React.FC<Props> = (props) => {

@@ -13,6 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import { Header } from "./components/organisms/Header";
 import { base_uri } from "@/infrastructure/Query/backendUri";
+import { CustomHeader } from "./components/features/CustomHeader";
 
 export default function MyApp() {
 	const router = useRouter();
@@ -22,7 +23,7 @@ export default function MyApp() {
 
 	return (
 		<>
-			<Header />
+			<CustomHeader />
 			<Button onClick={handleClickGoHomePage}>Go Home Page</Button>
 		</>
 	);
