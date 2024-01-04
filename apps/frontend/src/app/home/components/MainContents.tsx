@@ -1,29 +1,9 @@
-import { useLogin } from "@/infrastructure/Query/authorization";
-import { useUserQuery } from "@/infrastructure/Query/useUserQuery";
-import { Button } from "@mui/material";
+import { userAtom } from "@/app/hooks/jotai/atom";
+import { useAtomValue } from "jotai";
 import React from "react";
 
-export const MainContents = () => {
-	const [user, setUser] = React.useState();
-	// const { data, isLoading } = useUserQuery({});
+export const MainContents: React.FC = () => {
+	const user = useAtomValue(userAtom);
 
-	// React.useEffect(() => {
-	// 	console.log("aaaa", data);
-	// }, [data]);
-
-	const { mutate, data: loginUser } = useLogin({});
-
-	const handleClickLogin = () => {
-		mutate({
-			username: "test",
-			password: "password",
-		});
-	};
-
-	return (
-		<div>
-			<Button onClick={handleClickLogin}>{"aaaaa"}</Button>
-			{loginUser ? <div>{loginUser?.username}</div> : <></>}
-		</div>
-	);
+	return <div>{user ? <div>{user.username}</div> : <></>}</div>;
 };
