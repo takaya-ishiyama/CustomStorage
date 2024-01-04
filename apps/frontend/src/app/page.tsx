@@ -11,7 +11,6 @@ import {
 	Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { base_uri } from "@/infrastructure/Query/backendUri";
 import { CustomHeader } from "./components/features/CustomHeader";
 import React from "react";
 

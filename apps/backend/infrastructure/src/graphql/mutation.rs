@@ -24,12 +24,6 @@ struct Login {
     refresh_token: String,
 }
 
-#[derive(SimpleObject)]
-struct GetNewAccessToken {
-    access_token: String,
-    refresh_token: String,
-}
-
 pub struct Token(pub String);
 
 #[Object]
@@ -56,25 +50,6 @@ impl Mutation {
             password: create_user.0 .1.password,
             access_token: create_user.1.access_token,
             refresh_token: create_user.1.refresh_token,
-        })
-    }
-
-    async fn get_new_token<'ctx>(&self, ctx: &Context<'ctx>) -> Result<GetNewAccessToken, String> {
-        let token = ctx.data_opt::<Token>().map(|token| token.0.as_str());
-        if token.is_none() {
-            return Err("token is none".to_string());
-        }
-
-        let db = ctx.data::<Db>().unwrap().0.clone();
-        let repo = RepositoryImpls::new(db);
-
-        let session_usecase = SessionInteractor::new(&repo);
-
-        let session = session_usecase.update_token(token.unwrap()).await.unwrap();
-
-        Ok(GetNewAccessToken {
-            access_token: session.access_token,
-            refresh_token: session.refresh_token,
         })
     }
 

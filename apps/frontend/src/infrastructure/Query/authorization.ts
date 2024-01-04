@@ -176,7 +176,7 @@ export const useQueryReceipts = (
 					data: { getNewAccessToken },
 				} = await resp.json();
 				if (resp.ok) {
-					setCookie(null, "accessToken", tokenData.access, {
+					setCookie(null, "accessToken", getNewAccessToken, {
 						maxAge: 60 * 60 /*60min X 60second*/,
 					});
 					setCookie(null, "refreshToken", tokenData.refresh, {

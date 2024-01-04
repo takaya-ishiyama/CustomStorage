@@ -10,6 +10,12 @@ struct GetUser {
     password: String,
 }
 
+#[derive(SimpleObject)]
+struct GetNewToken {
+    access_token: String,
+    refresh_token: String,
+}
+
 pub struct Query;
 
 pub struct Token(pub String);
@@ -19,6 +25,26 @@ impl Query {
     async fn current_token<'a>(&self, ctx: &'a Context<'_>) -> Option<&'a str> {
         ctx.data_opt::<Token>().map(|token| token.0.as_str())
     }
+
+    async fn get_new_token<'ctx>(&self, ctx: &Context<'ctx>) -> Result<GetNewToken, String> {
+        let token = ctx.data_opt::<Token>().map(|token| token.0.as_str());
+        if token.is_none() {
+            return Err("token is none".to_string());
+        }
+
+        let db = ctx.data::<Db>().unwrap().0.clone();
+        let repo = RepositoryImpls::new(db);
+
+        let session_usecase = SessionInteractor::new(&repo);
+
+        let session = session_usecase.update_token(token.unwrap()).await.unwrap();
+
+        Ok(GetNewToken {
+            access_token: session.access_token,
+            refresh_token: session.refresh_token,
+        })
+    }
+
     async fn login_with_token<'a>(&self, ctx: &'a Context<'_>) -> Result<GetUser, String> {
         let token = ctx.data_opt::<Token>().map(|token| token.0.as_str());
         if token.is_none() {
@@ -35,20 +61,20 @@ impl Query {
         };
         Ok(user)
     }
-    async fn get_new_access_token<'a>(&self, ctx: &'a Context<'_>) -> Result<String, String> {
-        let token = ctx.data_opt::<Token>().map(|token| token.0.as_str());
-        if token.is_none() {
-            return Err("token is none".to_string());
-        }
-        let db = ctx.data::<Db>().unwrap().0.clone();
-        let repo = RepositoryImpls::new(db);
-        let session_usecase = SessionInteractor::new(&repo);
-        let session = session_usecase
-            .get_access_token(token.unwrap())
-            .await
-            .unwrap();
-        Ok(session.access_token)
-    }
+    // async fn get_new_access_token<'a>(&self, ctx: &'a Context<'_>) -> Result<String, String> {
+    //     let token = ctx.data_opt::<Token>().map(|token| token.0.as_str());
+    //     if token.is_none() {
+    //         return Err("token is none".to_string());
+    //     }
+    //     let db = ctx.data::<Db>().unwrap().0.clone();
+    //     let repo = RepositoryImpls::new(db);
+    //     let session_usecase = SessionInteractor::new(&repo);
+    //     let session = session_usecase
+    //         .get_access_token(token.unwrap())
+    //         .await
+    //         .unwrap();
+    //     Ok(session.access_token)
+    // }
     async fn get_user<'ctx>(
         &self,
         ctx: &Context<'ctx>,
