@@ -15,7 +15,7 @@ export const login = (
 	username: string,
 	password: string,
 ): Promise<Response> => {
-	const shcema = mutation.login();
+	const shcema = query.login();
 	return fetch(base_uri, {
 		method: "POST",
 		headers: {
@@ -34,7 +34,7 @@ const fetchNewToken = (): Promise<Response> => {
 		headers: {
 			Accept: "application/json",
 			"Content-Type": "application/json",
-			Authorization: `${cookies.refreshToken}`,
+			Authorization: cookies.refreshToken,
 		},
 		body: JSON.stringify({ query: shcema }),
 	});
@@ -48,56 +48,11 @@ async function fetchUserByAccessToken(): Promise<Response> {
 		headers: {
 			Accept: "application/json",
 			"Content-Type": "application/json",
-			Authorization: `${cookies.accessToken}`,
+			Authorization: cookies.accessToken,
 		},
 		body: JSON.stringify({ query: shcema }),
 	});
 }
-
-export const GetUser = async (
-	username: string,
-	password: string,
-): Promise<Response | undefined> => {
-	const resp = await login(username, password);
-	if (resp.ok) {
-		const tokenData = await resp.json();
-		setCookie(null, "accessToken", tokenData.access, {
-			maxAge: 60 * 60 * 60 /*30min X 60second*/,
-		});
-		setCookie(null, "refreshToken", tokenData.refresh, {
-			maxAge: 24 * 60 * 60 * 60 /* 24h X 60min X 60second*/,
-		});
-	}
-	return resp;
-};
-
-export const UseTokenGetUser = async () => {
-	const cookies = parseCookies();
-	if (cookies.accessToken) {
-		// アクセストークンがあればユーザー認証
-		const resp = await fetchUserByAccessToken();
-		return resp;
-	}
-	if (cookies.refreshToken) {
-		// リフレッシュトークンがあればアクセストークンをとってきてユーザー認証
-		const resp = await fetchNewToken();
-		const tokenData = await resp.json();
-		if (resp.ok) {
-			setCookie(null, "accessToken", tokenData.access, {
-				maxAge: 60 * 60 /*60min X 60second*/,
-			});
-			setCookie(null, "refreshToken", tokenData.refresh, {
-				maxAge: 24 * 60 * 60 /* 24h X 60min X 60second*/,
-			});
-			const user = await fetchUserByAccessToken();
-			return user;
-		}
-		return;
-	}
-	// なければ何も返さない
-	console.log("error : fetch access token");
-	return;
-};
 
 type LoginRequest = {
 	username: string;
@@ -140,7 +95,7 @@ export const useLogin: MutationLogin = ({ options }) => {
 		} = (await resp.json()) as { data: { login: LoginResult } };
 
 		setCookie(null, "accessToken", loginResult.accessToken, {
-			maxAge: 60 * 60 * 60 /*30min X 60second*/,
+			maxAge: 60 * 60 * 60 /*60min X 60second*/,
 		});
 		setCookie(null, "refreshToken", loginResult.refreshToken, {
 			maxAge: 24 * 60 * 60 * 60 /* 24h X 60min X 60second*/,
@@ -150,9 +105,11 @@ export const useLogin: MutationLogin = ({ options }) => {
 	}, options);
 };
 
-export const useQueryUserWithNewToken = (
-	options?: Omit<UseQueryOptions<LoginResult, AxiosError>, "queryKey">,
-): UseQueryResult<LoginResult, AxiosError> => {
+export const useQueryUserWithNewToken = ({
+	options,
+}: {
+	options?: Omit<UseQueryOptions<LoginResult, AxiosError>, "queryKey">;
+}): UseQueryResult<LoginResult, AxiosError> => {
 	const cookies = parseCookies();
 	return useQuery(
 		["user"],
@@ -170,7 +127,8 @@ export const useQueryUserWithNewToken = (
 				return loginResult;
 			}
 
-			if (cookies.accessToken == null && cookies.refreshToken) {
+			if (cookies.refreshToken) {
+				console.log("refreshToken");
 				const resp = await fetchNewToken();
 				const {
 					data: { getNewToken },

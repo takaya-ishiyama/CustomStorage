@@ -1,6 +1,8 @@
-export const mutation = {
+export const mutation = {};
+
+export const query = {
 	login: () => `
-	mutation LoginMutation($username: String!, $password: String!) {
+	query LoginQuery($username: String!, $password: String!) {
 	  login(username: $username, password: $password) {
 		id
 		username
@@ -9,9 +11,6 @@ export const mutation = {
 	  }
 	}
   `,
-};
-
-export const query = {
 	login_with_token: () => `
 		query {
 			loginWithToken {

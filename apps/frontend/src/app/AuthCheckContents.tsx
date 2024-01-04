@@ -4,14 +4,18 @@ import React from "react";
 
 export const AuthCheckContents = () => {
 	const router = useRouter();
-	const { data, isLoading } = useQueryUserWithNewToken();
+	const { data, isLoading } = useQueryUserWithNewToken({
+		options: {
+			retry: 3,
+		},
+	});
 
 	React.useEffect(() => {
 		console.log("aaaaaaaaa", data);
 		if (data?.id !== undefined && data?.id !== null) {
 			router.push("/home");
 		}
-	}, [data]);
+	}, [data, router]);
 	if (isLoading) {
 		return <div>Loading...</div>;
 	}

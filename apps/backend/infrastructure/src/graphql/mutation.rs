@@ -15,17 +15,6 @@ struct CreateUser {
     refresh_token: String,
 }
 
-#[derive(SimpleObject)]
-struct Login {
-    id: String,
-    username: String,
-    password: String,
-    access_token: String,
-    refresh_token: String,
-}
-
-pub struct Token(pub String);
-
 #[Object]
 impl Mutation {
     async fn create_user<'ctx>(
@@ -50,28 +39,6 @@ impl Mutation {
             password: create_user.0 .1.password,
             access_token: create_user.1.access_token,
             refresh_token: create_user.1.refresh_token,
-        })
-    }
-
-    async fn login<'ctx>(
-        &self,
-        ctx: &Context<'ctx>,
-        #[graphql(desc = "name of object")] username: String,
-        #[graphql(desc = "password of object")] password: String,
-    ) -> Result<Login, String> {
-        let db = ctx.data::<Db>().unwrap().0.clone();
-        let repo = RepositoryImpls::new(db);
-
-        let user_usecase = UserInteractor::new(&repo);
-
-        let login = user_usecase.login(&username, &password).await.unwrap();
-
-        Ok(Login {
-            id: login.0 .0.id,
-            username: login.0 .1.username,
-            password: login.0 .1.password,
-            access_token: login.1.access_token,
-            refresh_token: login.1.refresh_token,
         })
     }
 }
