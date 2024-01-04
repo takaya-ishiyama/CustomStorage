@@ -27,10 +27,10 @@ export const login = (
 };
 
 const fetchNewToken = (): Promise<Response> => {
-	const shcema = query.get_access_token();
+	const shcema = query.get_new_token();
 	const cookies = parseCookies();
 	return fetch(base_uri, {
-		method: "Get",
+		method: "POST",
 		headers: {
 			Accept: "application/json",
 			"Content-Type": "application/json",
@@ -44,7 +44,7 @@ async function fetchUserByAccessToken(): Promise<Response> {
 	const shcema = query.login_with_token();
 	const cookies = parseCookies();
 	return fetch(base_uri, {
-		method: "GET",
+		method: "POST",
 		headers: {
 			Accept: "application/json",
 			"Content-Type": "application/json",
@@ -150,43 +150,49 @@ export const useLogin: MutationLogin = ({ options }) => {
 	}, options);
 };
 
-export const useQueryReceipts = (
-	options?: UseQueryOptions<unknown, AxiosError, LoginResult>,
+export const useQueryUserWithNewToken = (
+	options?: Omit<UseQueryOptions<LoginResult, AxiosError>, "queryKey">,
 ): UseQueryResult<LoginResult, AxiosError> => {
 	const cookies = parseCookies();
-
 	return useQuery(
-		["login"],
-		async (): Promise<LoginResult> => {
+		["user"],
+		async () => {
 			if (cookies.accessToken) {
-				const resp = await fetchUserByAccessToken();
-				if (!resp.ok) {
-					throw new Error(`HTTP error! Status: ${resp.status}`);
-				}
+				const respByaccessToken = await fetchUserByAccessToken();
+				if (!respByaccessToken.ok)
+					throw new Error(`HTTP error! Status: ${respByaccessToken.status}`);
+
 				const {
 					data: { login: loginResult },
-				} = (await resp.json()) as { data: { login: LoginResult } };
-
+				} = (await respByaccessToken.json()) as {
+					data: { login: LoginResult };
+				};
 				return loginResult;
 			}
-			if (cookies.refreshToken) {
-				// リフレッシュトークンがあればアクセストークンをとってきてユーザー認証
+
+			if (cookies.accessToken == null && cookies.refreshToken) {
 				const resp = await fetchNewToken();
 				const {
-					data: { getNewAccessToken },
+					data: { getNewToken },
 				} = await resp.json();
 				if (resp.ok) {
-					setCookie(null, "accessToken", getNewAccessToken, {
+					setCookie(null, "accessToken", getNewToken.accessToken, {
 						maxAge: 60 * 60 /*60min X 60second*/,
 					});
-					setCookie(null, "refreshToken", tokenData.refresh, {
+					setCookie(null, "refreshToken", getNewToken.refreshToken, {
 						maxAge: 24 * 60 * 60 /* 24h X 60min X 60second*/,
 					});
-					const user = await fetchUserByAccessToken();
-					return user;
 				}
-				return;
+
+				const respByaccessToken = await fetchUserByAccessToken();
+				const {
+					data: { login: loginResult },
+				} = (await respByaccessToken.json()) as {
+					data: { login: LoginResult };
+				};
+				return loginResult;
 			}
+			throw new Error("error: expired fetch token");
 		},
 		options,
 	);

@@ -19,9 +19,12 @@ export const query = {
 				username
 			}
 		`,
-	get_access_token: () => `
+	get_new_token: () => `
 	query{
-		getNewAccessToken
+		getNewToken {
+			accessToken
+			refreshToken
+		}
 	}
 	`,
 };
