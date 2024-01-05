@@ -1,8 +1,9 @@
 import { MenuOutlined } from "@mui/icons-material";
-import { Toolbar, Typography, IconButton, Box, Button } from "@mui/material";
+import { Toolbar, Typography, IconButton } from "@mui/material";
 import React from "react";
 import { AppBar } from "../atom/AppBar";
 import { useRouter } from "next/navigation";
+import { Routes } from "@/app/routes";
 
 type Props = {
 	onClickMenue?: React.MouseEventHandler<HTMLButtonElement> | undefined;
@@ -17,7 +18,8 @@ export const Header: React.FC<Props> = (props) => {
 					variant="h6"
 					color="inherit"
 					component="div"
-					onClick={() => router.push("")}
+					style={{ cursor: "pointer" }}
+					onClick={() => router.push(Routes.top)}
 				>
 					CustomStorage
 				</Typography>

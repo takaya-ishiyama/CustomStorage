@@ -2,10 +2,10 @@
 
 import React from "react";
 import { CustomHeader } from "../components/features/CustomHeader";
-import { ProviderWrapper } from "../hooks/ProviderWrapper";
+import { ProviderWrapper } from "../hooks/Provider/ProviderWrapper";
 import { LoginFormContents } from "./components/LoginFormContents";
 
-const page = () => {
+const Login = () => {
 	return (
 		<ProviderWrapper>
 			<CustomHeader />
@@ -14,4 +14,4 @@ const page = () => {
 	);
 };
 
-export default page;
+export default Login;

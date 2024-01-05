@@ -3,6 +3,7 @@ import { Header } from "../organisms/Header";
 import { CustomizedMenus } from "../organisms/CustomizedMenus";
 import { MenuItem } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { Routes } from "@/app/routes";
 
 export const CustomHeader = () => {
 	const router = useRouter();
@@ -11,7 +12,7 @@ export const CustomHeader = () => {
 		setAnchorEl(event.currentTarget);
 	};
 
-	const handleClickGoLoginPage = () => router.push("/login");
+	const handleClickGoLoginPage = () => router.push(Routes.login);
 	return (
 		<div>
 			<Header onClickMenue={handleClick} />

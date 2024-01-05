@@ -1,4 +1,4 @@
-import { userAtom } from "@/app/hooks/jotai/atom";
+import { userAtom } from "@/app/hooks/jotai/user/atom";
 import { LoginResult, useLogin } from "@/infrastructure/Query/authorization";
 import { AxiosError } from "axios";
 import { useSetAtom, useStore } from "jotai";

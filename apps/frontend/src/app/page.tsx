@@ -13,7 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import { CustomHeader } from "./components/features/CustomHeader";
 import React from "react";
-import { ProviderWrapper } from "./hooks/ProviderWrapper";
+import { ProviderWrapper } from "./hooks/Provider/ProviderWrapper";
 import { AuthCheckContents } from "./AuthCheckContents";
 
 export default function MyApp() {
@@ -21,8 +21,6 @@ export default function MyApp() {
 	const handleClickGoHomePage = () => {
 		router.push("/home");
 	};
-
-	React.useEffect(() => {}, []);
 
 	return (
 		<>
