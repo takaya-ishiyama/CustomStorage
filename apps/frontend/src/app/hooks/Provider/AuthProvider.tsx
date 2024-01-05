@@ -1,9 +1,10 @@
-import { useAtom, useAtomValue } from "jotai";
+"use client";
+
+import { useAtom } from "jotai";
 import React, { PropsWithChildren } from "react";
 import { userAtom } from "../jotai/user/atom";
 import Login from "@/app/login/page";
 import { useQueryUserWithNewToken } from "@/infrastructure/Query/authorization";
-import { CircularProgress } from "@mui/material";
 import { Loading } from "@/app/components/molecules/Loading";
 
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
@@ -27,6 +28,6 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
 		});
 	}, [refetch, setUser, user.id, setIsVisible]);
 
-	if (isLoading || !isVisible) return <Loading />;
+	if (!isVisible) return <Loading />;
 	return <>{user.id ? <>{children}</> : <Login />}</>;
 };
