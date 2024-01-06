@@ -6,7 +6,7 @@ import {
 	useMutation,
 } from "react-query";
 import { base_uri } from "../backendUri";
-import { mutation, query } from "@/infrastructure/graphql/schema";
+import { mutation, query } from "@/infrastructure/graphql/makeSchema";
 import { parseCookies, setCookie } from "nookies";
 
 type RegisterResult = {
