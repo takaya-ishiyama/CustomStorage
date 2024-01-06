@@ -3,26 +3,25 @@ use async_graphql::*;
 use domain::infrastructure::interface::repository::repository_interface::Repositories;
 use usecase::{session::usecase::SessionInteractor, user::usecase::UserInteractor};
 
+use super::schema::auth::{SessionSchema, UserSchema};
+
 #[derive(SimpleObject)]
 struct GetUser {
-    id: String,
-    username: String,
-    password: String,
+    #[graphql(flatten)]
+    user: UserSchema,
 }
 
 #[derive(SimpleObject)]
 struct GetNewToken {
-    access_token: String,
-    refresh_token: String,
+    #[graphql(flatten)]
+    session: SessionSchema,
 }
 
 #[derive(SimpleObject)]
 struct Login {
-    id: String,
-    username: String,
-    password: String,
-    access_token: String,
-    refresh_token: String,
+    #[graphql(flatten)]
+    user: UserSchema,
+    session: SessionSchema,
 }
 
 pub struct Query;
@@ -49,11 +48,13 @@ impl Query {
         let login = user_usecase.login(&username, &password).await.unwrap();
 
         Ok(Login {
-            id: login.0 .0.id,
-            username: login.0 .1.username,
-            password: login.0 .1.password,
-            access_token: login.1.access_token,
-            refresh_token: login.1.refresh_token,
+            user: UserSchema::new(login.0 .0.id, login.0 .1.username),
+            session: SessionSchema::new(
+                None,
+                login.1.user_id,
+                Some(login.1.access_token),
+                Some(login.1.refresh_token),
+            ),
         })
     }
 
@@ -71,8 +72,12 @@ impl Query {
         let session = session_usecase.update_token(token.unwrap()).await.unwrap();
 
         Ok(GetNewToken {
-            access_token: session.access_token,
-            refresh_token: session.refresh_token,
+            session: SessionSchema::new(
+                None,
+                session.user_id,
+                Some(session.access_token),
+                Some(session.refresh_token),
+            ),
         })
     }
 
@@ -86,9 +91,7 @@ impl Query {
         let user_usecase = UserInteractor::new(&repo);
         let _user = user_usecase.login_with_token(token.unwrap()).await.unwrap();
         let user = GetUser {
-            id: _user.0.id,
-            username: _user.1.username,
-            password: _user.1.password,
+            user: UserSchema::new(_user.0.id, _user.1.username),
         };
         Ok(user)
     }
@@ -102,9 +105,7 @@ impl Query {
         let user_usecase = UserInteractor::new(&repo);
         let user = user_usecase.get_user(&id).await.unwrap();
         let user = GetUser {
-            id: user.0.id,
-            username: user.1.username,
-            password: user.1.password,
+            user: UserSchema::new(user.0.id, user.1.username),
         };
         Ok(user)
     }

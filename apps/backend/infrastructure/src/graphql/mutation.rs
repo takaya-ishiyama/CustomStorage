@@ -4,15 +4,15 @@ use usecase::{session::usecase::SessionInteractor, user::usecase::UserInteractor
 
 use crate::{db::persistence::postgres::Db, repository::repository_impl::RepositoryImpls};
 
+use super::schema::auth::{SessionSchema, UserSchema};
+
 pub struct Mutation;
 
 #[derive(SimpleObject)]
 struct CreateUser {
-    id: String,
-    username: String,
-    password: String,
-    access_token: String,
-    refresh_token: String,
+    #[graphql(flatten)]
+    user: UserSchema,
+    session: SessionSchema,
 }
 
 #[Object]
@@ -34,11 +34,13 @@ impl Mutation {
             .unwrap();
 
         Ok(CreateUser {
-            id: create_user.0 .0.id,
-            username: create_user.0 .1.username,
-            password: create_user.0 .1.password,
-            access_token: create_user.1.access_token,
-            refresh_token: create_user.1.refresh_token,
+            user: UserSchema::new(create_user.0 .0.id, create_user.0 .1.username),
+            session: SessionSchema::new(
+                None,
+                create_user.1.user_id,
+                Some(create_user.1.access_token),
+                Some(create_user.1.refresh_token),
+            ),
         })
     }
 }

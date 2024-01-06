@@ -2,21 +2,20 @@
 type CreateUser {
 	id: String!
 	username: String!
-	password: String!
-	accessToken: String!
-	refreshToken: String!
+	session: SessionSchema!
 }
 
 
 type GetNewToken {
-	accessToken: String!
-	refreshToken: String!
+	id: Int
+	userId: String!
+	accessToken: String
+	refreshToken: String
 }
 
 type GetUser {
 	id: String!
 	username: String!
-	password: String!
 }
 
 
@@ -24,9 +23,7 @@ type GetUser {
 type Login {
 	id: String!
 	username: String!
-	password: String!
-	accessToken: String!
-	refreshToken: String!
+	session: SessionSchema!
 }
 
 type Mutation {
@@ -62,6 +59,13 @@ type Query {
 		"""
 		id: String!
 	): GetUser!
+}
+
+type SessionSchema {
+	id: Int
+	userId: String!
+	accessToken: String
+	refreshToken: String
 }
 
 
