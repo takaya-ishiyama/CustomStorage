@@ -4,6 +4,8 @@ mod graphql;
 mod repository;
 mod test;
 
+use std::fs::File;
+use std::io::prelude::*;
 use std::net::SocketAddr;
 
 use async_graphql::http::GraphQLPlaygroundConfig;
@@ -34,6 +36,7 @@ async fn main() {
         let schema = Schema::build(Query, Mutation, EmptySubscription)
             .data(new_db::<Db>().await)
             .finish();
+        export_gql_schema(&schema);
 
         let app = Router::new()
             .route("/", get(graphql_playground).post(graphql_handler))
@@ -72,6 +75,14 @@ async fn graphql_handler(
 
 async fn graphql_playground() -> impl IntoResponse {
     Html(playground_source(GraphQLPlaygroundConfig::new("/")))
+}
+
+fn export_gql_schema(schema: &Schema<Query, Mutation, EmptySubscription>) {
+    let file_path = "graphql/schema.gql";
+    let export_schema = schema.sdl();
+
+    let mut new_file = File::create(file_path).unwrap();
+    new_file.write_all(export_schema.as_bytes()).unwrap();
 }
 
 #[cfg(test)]
