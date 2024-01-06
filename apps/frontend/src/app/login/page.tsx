@@ -15,7 +15,6 @@ const Login = () => {
 	const user = useAtomValue(userAtom);
 	const router = useRouter();
 	React.useEffect(() => {
-		console.log("eeecccd", user);
 		if (user.id != null && user.id !== "") router.push(Routes.home);
 	}, [user, router]);
 	if (user === null || user === undefined) return <Loading />;
