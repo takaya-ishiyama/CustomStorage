@@ -19,11 +19,6 @@ export default function MyApp() {
 					<Button>ユーザー登録</Button>
 				</Link>
 			</Box>
-			{/* <ProviderWrapper> */}
-			{/* <CustomHeader /> */}
-			{/* <AuthCheckContents /> */}
-			{/* <Button onClick={handleClickGoHomePage}>Go Home Page</Button> */}
-			{/* </ProviderWrapper> */}
 		</>
 	);
 }
