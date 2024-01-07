@@ -1,11 +1,12 @@
 import { userAtom } from "@/app/hooks/jotai/user/atom";
-import { LoginResult, useLogin } from "@/infrastructure/Query/authorization";
+import { useLogin } from "@/infrastructure/Query/authorization";
+import { Login } from "@/infrastructure/graphql/graphql";
 import { AxiosError } from "axios";
 import { useSetAtom, useStore } from "jotai";
 import React from "react";
 
 type Props = {
-	onSuccess?: (data: LoginResult) => void;
+	onSuccess?: (data: Login) => void;
 	onError?: (error: AxiosError<unknown> | undefined) => void;
 };
 

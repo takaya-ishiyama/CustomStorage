@@ -8,5 +8,9 @@ export const MainContents: React.FC = () => {
 		console.log(user);
 	}, [user]);
 
-	return <div>{user ? <div>{user.username}</div> : <>{"aaaaa"}</>}</div>;
+	return (
+		<div>
+			{user ? <div>{user.username}</div> : <div>ログインしてください</div>}
+		</div>
+	);
 };

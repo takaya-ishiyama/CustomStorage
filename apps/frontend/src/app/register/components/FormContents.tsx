@@ -5,19 +5,17 @@ import { useCreateUser } from "../hooks/useCreateUser";
 import { useRouter } from "next/navigation";
 import { Routes } from "@/app/routes";
 import { Button, Flex } from "@radix-ui/themes";
+import { useHandleAfter } from "../hooks/useHandleAfter";
 
 export const FormContents = () => {
-	const router = useRouter();
 	const {
 		control,
 		formState: { errors, isLoading },
 		handleSubmit: handleSubmitWrapper,
 	} = useRegisterForm();
+	const { handleSuccess } = useHandleAfter();
 
-	const onSuccess = React.useCallback(() => {
-		router.push(Routes.home);
-	}, [router]);
-	const { createUser } = useCreateUser({ onSuccess });
+	const { createUser } = useCreateUser({ onSuccess: handleSuccess });
 	const handleSubmit = handleSubmitWrapper(({ username, password }) =>
 		createUser({ username, password }),
 	);

@@ -4,7 +4,7 @@ import { useSetAtom } from "jotai";
 import React from "react";
 
 type Props = {
-	onSuccess?: (data: unknown) => void;
+	onSuccess?: (userId: string) => void;
 	onError?: (error: unknown) => void;
 };
 
@@ -19,7 +19,7 @@ export const useCreateUser = ({ onSuccess }: Props) => {
 		options: {
 			onSuccess: (data) => {
 				setUserAtom({ id: data.id, username: data.username });
-				onSuccess?.(data);
+				onSuccess?.(data.id);
 			},
 		},
 	});

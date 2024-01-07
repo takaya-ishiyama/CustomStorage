@@ -1,16 +1,16 @@
 import { Button, ThemePanel } from "@radix-ui/themes";
-import { useRouter } from "next/navigation";
 import React from "react";
+import Link from "next/link";
+import { useRoutes } from "./routes";
 export default function MyApp() {
-	// const router = useRouter();
-	// const handleClickGoHomePage = () => {
-	// 	router.push("/home");
-	// };
+	const { getLogin } = useRoutes();
 
 	return (
 		<>
-			<ThemePanel />
-			<Button>aaaaaa</Button>
+			{/* <ThemePanel /> */}
+			<Link href={getLogin()}>
+				<Button>aaaaaa</Button>
+			</Link>
 			{/* <ProviderWrapper> */}
 			{/* <CustomHeader /> */}
 			{/* <AuthCheckContents /> */}
