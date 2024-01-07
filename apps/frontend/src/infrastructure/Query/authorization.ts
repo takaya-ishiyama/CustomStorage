@@ -11,7 +11,7 @@ import {
 } from "react-query";
 import { AxiosError } from "axios";
 import { useSetAtom } from "jotai";
-import { Login, QueryLoginArgs } from "../graphql/graphql";
+import { GetUser, Login, QueryLoginArgs } from "../graphql/graphql";
 
 export const login = (
 	username: string,
@@ -103,8 +103,8 @@ export const useLogin: MutationLogin = ({ options }) => {
 export const useQueryUserWithNewToken = ({
 	options,
 }: {
-	options?: Omit<UseQueryOptions<Login, AxiosError>, "queryKey">;
-}): UseQueryResult<Login, AxiosError> => {
+	options?: Omit<UseQueryOptions<GetUser, AxiosError>, "queryKey">;
+}): UseQueryResult<GetUser, AxiosError> => {
 	const cookies = parseCookies();
 	return useQuery(
 		["user"],
@@ -115,9 +115,9 @@ export const useQueryUserWithNewToken = ({
 					throw new Error(`HTTP error! Status: ${respByaccessToken.status}`);
 
 				const {
-					data: { login: loginResult },
+					data: { loginWithToken: loginResult },
 				} = (await respByaccessToken.json()) as {
-					data: { login: Login };
+					data: { loginWithToken: GetUser };
 				};
 				return loginResult;
 			}
@@ -139,9 +139,9 @@ export const useQueryUserWithNewToken = ({
 
 				const respByaccessToken = await fetchUserByAccessToken();
 				const {
-					data: { login: loginResult },
+					data: { loginWithToken: loginResult },
 				} = (await respByaccessToken.json()) as {
-					data: { login: Login };
+					data: { loginWithToken: GetUser };
 				};
 				return loginResult;
 			}

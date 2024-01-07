@@ -32,6 +32,7 @@ export const query = {
 				id
 				username
 			}
+		}
 		`,
 	get_new_token: () => `
 	query{

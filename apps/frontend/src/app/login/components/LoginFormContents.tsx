@@ -1,12 +1,25 @@
+"use client";
 import { InputWithRHF } from "@/app/components/molecules/InputWithRFH";
 import React from "react";
-import { useForm } from "react-hook-form";
 import { useLoginForm } from "../hooks/useLoginForm";
 import { useMutateLoginUser } from "../hooks/useMutateLoginUser";
 import { useHandleAfter } from "../hooks/useHandleAfter";
 import { Button, Flex } from "@radix-ui/themes";
+import { useQueryUserWithNewToken } from "@/infrastructure/Query/authorization";
 
 export const LoginFormContents = () => {
+	const { data } = useQueryUserWithNewToken({
+		options: {
+			retry: 3,
+			onSuccess: (data) => {
+				console.log("data", data);
+			},
+			onError: (error) => {
+				console.log("error", error);
+			},
+		},
+	});
+
 	const {
 		control,
 		formState: { errors, isLoading },
