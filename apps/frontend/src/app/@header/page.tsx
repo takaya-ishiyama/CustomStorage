@@ -1,6 +1,8 @@
 import React from "react";
 import { CustomHeader } from "../components/features/CustomHeader";
 
-export const page = () => {
+const page = () => {
 	return <CustomHeader />;
 };
+
+export default page;

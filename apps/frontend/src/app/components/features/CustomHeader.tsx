@@ -1,9 +1,8 @@
 import React from "react";
-import { Header } from "../organisms/Header";
 import { CustomizedMenus } from "../organisms/CustomizedMenus";
-import { MenuItem } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { Routes } from "@/app/routes";
+import { ContextMenuItem } from "@radix-ui/themes";
 
 export const CustomHeader = () => {
 	const router = useRouter();
@@ -22,12 +21,16 @@ export const CustomHeader = () => {
 	);
 	return (
 		<div>
-			<Header onClickMenue={handleClick} />
+			{/* <Header onClickMenue={handleClick} />
 			<CustomizedMenus anchorEl={anchorEl} setAnchorEl={setAnchorEl}>
-				<MenuItem onClick={handleClickGoLoginPage}>ログイン</MenuItem>
-				<MenuItem onClick={() => {}}>ログアウト</MenuItem>
-				<MenuItem onClick={handleClickGoRegister}>アカウント作成</MenuItem>
-			</CustomizedMenus>
+				<ContextMenuItem onClick={handleClickGoLoginPage}>
+					ログイン
+				</ContextMenuItem>
+				<ContextMenuItem onClick={() => {}}>ログアウト</ContextMenuItem>
+				<ContextMenuItem onClick={handleClickGoRegister}>
+					アカウント作成
+				</ContextMenuItem>
+			</CustomizedMenus> */}
 		</div>
 	);
 };

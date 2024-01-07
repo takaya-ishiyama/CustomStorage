@@ -1,9 +1,9 @@
-import { Box, CircularProgress, styled } from "@mui/material";
+import { Flex } from "@radix-ui/themes";
 
 export const Loading: React.FC = () => {
 	return (
 		<>
-			<Box
+			<Flex
 				style={{
 					position: "absolute",
 					top: 0,
@@ -15,8 +15,8 @@ export const Loading: React.FC = () => {
 				}}
 			/>
 
-			<Box
-				sx={{
+			<Flex
+				style={{
 					position: "absolute",
 					top: "50%",
 					left: "50%",
@@ -24,8 +24,8 @@ export const Loading: React.FC = () => {
 					zIndex: 10000,
 				}}
 			>
-				<CircularProgress />
-			</Box>
+				<div>Loading...</div>
+			</Flex>
 		</>
 	);
 };

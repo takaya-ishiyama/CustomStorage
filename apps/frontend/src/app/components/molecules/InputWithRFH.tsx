@@ -1,8 +1,8 @@
-import { Box, Input } from "@mui/material";
+import { Box, Flex, TextFieldInput } from "@radix-ui/themes";
 import React from "react";
 import { Controller, FieldValues, UseControllerProps } from "react-hook-form";
 
-type InputProps = React.ComponentProps<typeof Input>;
+type InputProps = React.ComponentProps<typeof TextFieldInput>;
 type BoxProps = React.ComponentProps<typeof Box>;
 
 type OmitForInputWithRHF = Omit<InputProps, "value" | "onChange" | "onBlur">;
@@ -29,9 +29,9 @@ export const InputWithRHF = <TFieldValues extends FieldValues>({
 			field: { onChange, onBlur, value, ref },
 			fieldState: { error },
 		}) => (
-			<Box sx={{ display: "flex" }}>
-				<Box sx={{ display: "flex" }}>
-					<Input
+			<Flex>
+				<Flex>
+					<TextFieldInput
 						{...inputProps}
 						ref={ref}
 						value={value ?? ""}
@@ -39,9 +39,9 @@ export const InputWithRHF = <TFieldValues extends FieldValues>({
 						onBlur={onBlur}
 					/>
 					{children}
-				</Box>
-				<Box>{error?.message != null ? [error.message] : []}</Box>
-			</Box>
+				</Flex>
+				<Flex>{error?.message != null ? [error.message] : []}</Flex>
+			</Flex>
 		)}
 	/>
 );

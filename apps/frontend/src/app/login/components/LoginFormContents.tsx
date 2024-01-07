@@ -1,10 +1,10 @@
 import { InputWithRHF } from "@/app/components/molecules/InputWithRFH";
 import React from "react";
-import { Box, Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useLoginForm } from "../hooks/useLoginForm";
 import { useMutateLoginUser } from "../hooks/useMutateLoginUser";
 import { useHandleAfter } from "../hooks/useHandleAfter";
+import { Button, Flex } from "@radix-ui/themes";
 
 export const LoginFormContents = () => {
 	const {
@@ -29,11 +29,11 @@ export const LoginFormContents = () => {
 	);
 
 	return (
-		<Box>
+		<div>
 			<InputWithRHF control={control} name={"username"} />
 			<InputWithRHF control={control} name={"password"} />
-			<Box>{errors.username?.message}</Box>
+			<Flex>{errors.username?.message}</Flex>
 			<Button onClick={handleSubmit}>{"送信"}</Button>
-		</Box>
+		</div>
 	);
 };

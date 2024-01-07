@@ -1,10 +1,10 @@
 import { InputWithRHF } from "@/app/components/molecules/InputWithRFH";
-import { Box, Button } from "@mui/material";
 import React from "react";
 import { useRegisterForm } from "../hooks/useRegisterForm";
 import { useCreateUser } from "../hooks/useCreateUser";
 import { useRouter } from "next/navigation";
 import { Routes } from "@/app/routes";
+import { Button, Flex } from "@radix-ui/themes";
 
 export const FormContents = () => {
 	const router = useRouter();
@@ -25,7 +25,7 @@ export const FormContents = () => {
 		<>
 			<InputWithRHF control={control} name={"username"} />
 			<InputWithRHF control={control} name={"password"} />
-			<Box>{errors.username?.message}</Box>
+			<Flex>{errors.username?.message}</Flex>
 			<Button onClick={handleSubmit}>{"送信"}</Button>
 		</>
 	);

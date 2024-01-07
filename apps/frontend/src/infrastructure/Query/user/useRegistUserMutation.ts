@@ -65,3 +65,26 @@ export const useResgistUserMutation: CreateUserQuery = ({ options }) => {
 		options,
 	);
 };
+
+export async function generateStaticParams(input: MutationCreateUserArgs) {
+	const shcema = mutation.register();
+	const resp = await fetch(base_uri, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			query: shcema,
+			variables: { ...input },
+		}),
+	});
+	if (!resp.ok) {
+		throw new Error("Error");
+	}
+	const {
+		data: { createUser },
+	} = await resp.json();
+
+	return createUser;
+}
