@@ -4,15 +4,15 @@ import React from "react";
 import { ProviderWrapper } from "../hooks/Provider/ProviderWrapper";
 import { CustomHeader } from "../components/features/CustomHeader";
 import { FormContents } from "./components/FormContents";
-import { Flex } from "@radix-ui/themes";
+import { Box, Text } from "@radix-ui/themes";
 
 const Register = () => {
 	return (
-		<>
+		<ProviderWrapper>
 			{/* <CustomHeader /> */}
-			<Flex>ユーザー登録</Flex>
+			<Text>ユーザー登録</Text>
 			<FormContents />
-		</>
+		</ProviderWrapper>
 	);
 };
 

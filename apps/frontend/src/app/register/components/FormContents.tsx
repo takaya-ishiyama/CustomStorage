@@ -1,9 +1,8 @@
+"use client";
 import { InputWithRHF } from "@/app/components/molecules/InputWithRFH";
 import React from "react";
 import { useRegisterForm } from "../hooks/useRegisterForm";
 import { useCreateUser } from "../hooks/useCreateUser";
-import { useRouter } from "next/navigation";
-import { Routes } from "@/app/routes";
 import { Button, Flex } from "@radix-ui/themes";
 import { useHandleAfter } from "../hooks/useHandleAfter";
 

@@ -6,7 +6,7 @@ export const useHandleAfter = () => {
 	const router = useRouter();
 	const { getHome } = useRoutes();
 
-	const onSuccess = React.useCallback(
+	const handleSuccess = React.useCallback(
 		(userId: string) => {
 			router.push(getHome(userId));
 		},
@@ -14,6 +14,6 @@ export const useHandleAfter = () => {
 	);
 
 	return {
-		onSuccess,
+		handleSuccess,
 	};
 };
