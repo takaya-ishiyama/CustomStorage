@@ -4,8 +4,10 @@ export const mutation = {
 		createUser(username: $username, password: $password) {
 			id
 			username
-			accessToken
-			refreshToken
+			session {
+				accessToken
+				refreshToken
+			}
 		}
 	}
 	`,
@@ -17,8 +19,10 @@ export const query = {
 	  login(username: $username, password: $password) {
 		id
 		username
-		accessToken
-		refreshToken
+		session {
+			accessToken
+			refreshToken
+		}
 	  }
 	}
   `,

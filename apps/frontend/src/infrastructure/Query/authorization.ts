@@ -1,6 +1,6 @@
 import { destroyCookie, parseCookies, setCookie } from "nookies";
 import { base_uri } from "./backendUri";
-import { mutation, query } from "../graphql/schema";
+import { mutation, query } from "../graphql/requestBody";
 import {
 	UseMutationOptions,
 	UseMutationResult,
@@ -11,6 +11,7 @@ import {
 } from "react-query";
 import { AxiosError } from "axios";
 import { useSetAtom } from "jotai";
+import { Login, QueryLoginArgs } from "../graphql/graphql";
 
 export const login = (
 	username: string,
@@ -55,37 +56,21 @@ async function fetchUserByAccessToken(): Promise<Response> {
 	});
 }
 
-type LoginRequest = {
-	username: string;
-	password: string;
-};
-export type LoginResult = {
-	id: string;
-	username: string;
-	accessToken: string;
-	refreshToken: string;
-};
-
 type MutationLoginProps = {
-	options?: UseMutationOptions<
-		LoginResult,
-		AxiosError,
-		LoginRequest,
-		undefined
-	>;
+	options?: UseMutationOptions<Login, AxiosError, QueryLoginArgs, undefined>;
 };
 
 type MutationLogin = ({
 	options,
 }: MutationLoginProps) => UseMutationResult<
-	LoginResult,
+	Login,
 	AxiosError,
-	LoginRequest,
+	QueryLoginArgs,
 	undefined
 >;
 
 export const useLogin: MutationLogin = ({ options }) => {
-	return useMutation(async (input: LoginRequest): Promise<LoginResult> => {
+	return useMutation(async (input: QueryLoginArgs): Promise<Login> => {
 		const resp = await login(input.username, input.password);
 		if (!resp.ok) {
 			throw new Error(`HTTP error! Status: ${resp.status}`);
@@ -93,12 +78,20 @@ export const useLogin: MutationLogin = ({ options }) => {
 
 		const {
 			data: { login: loginResult },
-		} = (await resp.json()) as { data: { login: LoginResult } };
+		} = (await resp.json()) as { data: { login: Login } };
 
-		setCookie(null, "accessToken", loginResult.accessToken, {
+		if (
+			loginResult.session.accessToken === null ||
+			loginResult.session.accessToken === undefined ||
+			loginResult.session.refreshToken === null ||
+			loginResult.session.refreshToken === undefined
+		)
+			throw new Error("error: login failed");
+
+		setCookie(null, "accessToken", loginResult.session.accessToken, {
 			maxAge: 60 * 60 * 60 /*60min X 60second*/,
 		});
-		setCookie(null, "refreshToken", loginResult.refreshToken, {
+		setCookie(null, "refreshToken", loginResult.session.refreshToken, {
 			maxAge: 24 * 60 * 60 * 60 /* 24h X 60min X 60second*/,
 		});
 
@@ -109,8 +102,8 @@ export const useLogin: MutationLogin = ({ options }) => {
 export const useQueryUserWithNewToken = ({
 	options,
 }: {
-	options?: Omit<UseQueryOptions<LoginResult, AxiosError>, "queryKey">;
-}): UseQueryResult<LoginResult, AxiosError> => {
+	options?: Omit<UseQueryOptions<Login, AxiosError>, "queryKey">;
+}): UseQueryResult<Login, AxiosError> => {
 	const cookies = parseCookies();
 	return useQuery(
 		["user"],
@@ -123,7 +116,7 @@ export const useQueryUserWithNewToken = ({
 				const {
 					data: { login: loginResult },
 				} = (await respByaccessToken.json()) as {
-					data: { login: LoginResult };
+					data: { login: Login };
 				};
 				return loginResult;
 			}
@@ -147,7 +140,7 @@ export const useQueryUserWithNewToken = ({
 				const {
 					data: { login: loginResult },
 				} = (await respByaccessToken.json()) as {
-					data: { login: LoginResult };
+					data: { login: Login };
 				};
 				return loginResult;
 			}

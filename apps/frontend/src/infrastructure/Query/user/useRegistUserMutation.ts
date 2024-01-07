@@ -6,42 +6,34 @@ import {
 	useMutation,
 } from "react-query";
 import { base_uri } from "../backendUri";
-import { mutation, query } from "@/infrastructure/graphql/makeSchema";
 import { parseCookies, setCookie } from "nookies";
-
-type RegisterResult = {
-	id: string;
-	username: string;
-	accessToken: string;
-	refreshToken: string;
-};
-
-type RegisterRequest = {
-	username: string;
-	password: string;
-};
+import {
+	CreateUser,
+	MutationCreateUserArgs,
+} from "@/infrastructure/graphql/graphql";
+import { mutation } from "@/infrastructure/graphql/requestBody";
 
 type CreateUserProps = {
 	options?: UseMutationOptions<
-		RegisterResult,
+		CreateUser,
 		AxiosError,
-		RegisterRequest,
+		MutationCreateUserArgs,
 		undefined
 	>;
 };
 
-type CreateUser = ({
+type CreateUserQuery = ({
 	options,
 }: CreateUserProps) => UseMutationResult<
-	RegisterResult,
+	CreateUser,
 	AxiosError,
-	RegisterRequest,
+	MutationCreateUserArgs,
 	undefined
 >;
 
-export const useResgistUserMutation: CreateUser = ({ options }) => {
+export const useResgistUserMutation: CreateUserQuery = ({ options }) => {
 	return useMutation(
-		async (input: RegisterRequest): Promise<RegisterResult> => {
+		async (input: MutationCreateUserArgs): Promise<CreateUser> => {
 			const shcema = mutation.register();
 			const resp = await fetch(base_uri, {
 				method: "POST",
