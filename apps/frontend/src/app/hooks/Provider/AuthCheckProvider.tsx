@@ -13,9 +13,9 @@ export const AuthCheckProvider: React.FC<PropsWithChildren> = ({
 	const router = useRouter();
 	const setUser = useSetAtom(userAtom);
 	const { getHome } = useRoutes();
-	const { data, isLoading } = useQueryUserWithNewToken({
+	const { data, isLoading, isError } = useQueryUserWithNewToken({
 		options: {
-			retry: 3,
+			retry: 1,
 			onSettled: (data) => {
 				if (data === undefined) return;
 				setUser({ id: data.id, username: data.username });
@@ -26,7 +26,9 @@ export const AuthCheckProvider: React.FC<PropsWithChildren> = ({
 			},
 		},
 	});
-	if (isLoading) return <Loading />;
+
+	// FIXME: なんかずっとローディングになってる
+	// if (isLoading) return <Loading />;
 	if (data?.id) return null;
 	return <>{children}</>;
 };

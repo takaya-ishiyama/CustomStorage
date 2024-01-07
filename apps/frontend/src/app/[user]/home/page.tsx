@@ -4,7 +4,6 @@ import React from "react";
 import { MainContents } from "./components/MainContents";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ProviderWrapper } from "../../hooks/Provider/ProviderWrapper";
-import { AuthProvider } from "../../hooks/Provider/AuthProvider";
 
 const page = () => {
 	return (

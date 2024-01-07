@@ -53,7 +53,6 @@ async function fetchUserByAccessToken(): Promise<Response> {
 			Authorization: cookies.accessToken,
 		},
 		body: JSON.stringify({ query: shcema }),
-		next: { revalidate: 3600 },
 	});
 }
 
@@ -107,7 +106,7 @@ export const useQueryUserWithNewToken = ({
 }): UseQueryResult<GetUser, AxiosError> => {
 	const cookies = parseCookies();
 	return useQuery(
-		["user"],
+		["userWithToken"],
 		async () => {
 			if (cookies.accessToken) {
 				const respByaccessToken = await fetchUserByAccessToken();
