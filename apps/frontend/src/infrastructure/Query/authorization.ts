@@ -53,6 +53,7 @@ async function fetchUserByAccessToken(): Promise<Response> {
 			Authorization: cookies.accessToken,
 		},
 		body: JSON.stringify({ query: shcema }),
+		next: { revalidate: 3600 },
 	});
 }
 
