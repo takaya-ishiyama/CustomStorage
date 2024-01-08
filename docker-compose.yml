@@ -10,7 +10,7 @@ services:
       - "3000:3000"
     volumes:
       - ./apps/frontend:/apps/frontend
-    command: yarn run start
+    stdin_open: true
 
   rust:
     container_name: rust
@@ -19,12 +19,12 @@ services:
       dockerfile: Dockerfile
     env_file: ./apps/backend/.env
     ports:
-      - "8000:8000"
+      - "8001:8001"
     volumes:
       - ./apps/backend:/apps/backend
     depends_on:
       - db
-    command: cargo run
+    stdin_open: true
 
   db:
     container_name: postgres
