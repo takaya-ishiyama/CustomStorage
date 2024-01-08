@@ -1,25 +1,30 @@
 version: "3.8"
 
 services:
-  test_db:
-    container_name: test_postgres
+  node:
+    container_name: node
     build:
-        context: ./postgres
-        dockerfile: Dockerfile
-        target: "database"
+      context: ./apps/frontend
+      dockerfile: Dockerfile
     ports:
-        -   "5433:5432"
+      - "3000:3000"
     volumes:
-        - ./database/test-pg-data:/var/lib/postgresql/test-data
-    env_file:
-        - ./postgres/.env.dev
-    restart: always
-    healthcheck:
-        test: pg_isready -U postgres
-        interval: 10s
-        timeout: 5s
-        retries: 5
-        start_period: 10s
+      - ./apps/frontend:/apps/frontend
+    command: yarn run start
+
+  rust:
+    container_name: rust
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    env_file: ./apps/backend/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./apps/backend:/apps/backend
+    depends_on:
+      - db
+    command: cargo run
 
   db:
     container_name: postgres
@@ -42,4 +47,3 @@ services:
         start_period: 10s
 volumes:
     pg-data:
-    test-pg-data:
