@@ -10,6 +10,8 @@ services:
       - "3000:3000"
     volumes:
       - ./apps/frontend:/apps/frontend
+    # stdin_open: true
+
 
   rust:
     container_name: rust
@@ -21,3 +23,4 @@ services:
       - "8001:8001"
     volumes:
       - ./apps/backend:/apps/backend
+    # stdin_open: true
