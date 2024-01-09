@@ -1,5 +1,2 @@
-target
-.dockerignore
-Dockerfile
 .git
 .gitignore
