@@ -24,7 +24,7 @@ services:
   #     - ./apps/backend:/apps/backend
   #   depends_on:
   #     - db
-  #   stdin_open: true
+  #   # stdin_open: true  
 
   db:
     container_name: postgres
