@@ -1,0 +1,4 @@
+apps/backend/target/*
+database/*
+.env
+.env.local

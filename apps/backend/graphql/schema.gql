@@ -1,0 +1,75 @@
+
+type CreateUser {
+	id: String!
+	username: String!
+	session: SessionSchema!
+}
+
+
+type GetNewToken {
+	id: Int
+	userId: String!
+	accessToken: String
+	refreshToken: String
+}
+
+type GetUser {
+	id: String!
+	username: String!
+}
+
+
+
+type Login {
+	id: String!
+	username: String!
+	session: SessionSchema!
+}
+
+type Mutation {
+	createUser(
+		"""
+		name of object
+		"""
+		username: String!,
+		"""
+		password of object
+		"""
+		password: String!
+	): CreateUser!
+}
+
+type Query {
+	currentToken: String
+	login(
+		"""
+		name of object
+		"""
+		username: String!,
+		"""
+		password of object
+		"""
+		password: String!
+	): Login!
+	getNewToken: GetNewToken!
+	loginWithToken: GetUser!
+	getUser(
+		"""
+		Id of object
+		"""
+		id: String!
+	): GetUser!
+}
+
+type SessionSchema {
+	id: Int
+	userId: String!
+	accessToken: String
+	refreshToken: String
+}
+
+
+schema {
+	query: Query
+	mutation: Mutation
+}
