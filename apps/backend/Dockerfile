@@ -8,5 +8,5 @@ COPY . /apps/backend/
 FROM debian:bookworm-slim AS runner
  
 WORKDIR /apps/backend
-COPY --from=builder /apps/backend /apps/backend
+COPY . /apps/backend/
 CMD ["/apps/backend"]
