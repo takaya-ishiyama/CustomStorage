@@ -10,4 +10,5 @@ FROM debian:bookworm-slim AS runner
  
 WORKDIR /apps/backend
 COPY . /apps/backend/
+EXPOSE 8001
 CMD ["cargo", "run"]
