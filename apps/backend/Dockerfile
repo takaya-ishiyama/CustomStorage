@@ -1,13 +1,13 @@
-FROM rust:latest
+FROM rust:bookworm AS builder
 
-# WORKDIR /apps/backend
-# COPY . /apps/backend/
-# EXPOSE 8000
-# CMD ["cargo", "run"]
+WORKDIR /backend
+COPY . .
+RUN cargo build --release
 
-# production stage
+# # production stage
 FROM debian:bookworm-slim AS runner
  
-WORKDIR /apps/backend
-COPY . /apps/backend/
-CMD ["cargo", "run"]
+WORKDIR /backend
+COPY --from=builder /backend/target/release/infrastructure /bin/
+# EXPOSE 8001
+CMD ["/bin/infrastructure"]
