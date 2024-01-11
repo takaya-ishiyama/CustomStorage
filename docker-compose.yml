@@ -11,7 +11,6 @@ services:
     volumes:
       - ./apps/frontend:/apps/frontend
 
-
   rust:
     container_name: rust
     build:
@@ -19,8 +18,7 @@ services:
       dockerfile: Dockerfile
     env_file: ./apps/backend/.env
     ports:
-      - "8001:8001"
+      - "8000:8000"
     volumes:
       - ./apps/backend:/apps/backend
-    # stdin_open: true  
 
