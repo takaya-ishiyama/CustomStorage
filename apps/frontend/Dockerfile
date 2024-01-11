@@ -1,11 +1,13 @@
-FROM node:18-alpine AS base 
+FROM node:18-alpine AS builder 
 
-# WORKDIR /apps/frontend
-# COPY . /apps/frontend/
+WORKDIR /frontend
+COPY . .
 
  
-FROM base AS runner
-WORKDIR /apps/frontend
-COPY . /apps/frontend/
+FROM builder AS runner
+WORKDIR /frontend
+COPY --from=builder /frontend /frontend/
+RUN yarn install
+RUN yarn build
 EXPOSE 3000
-CMD ["yarn", "run", "start"]
+CMD ["yarn", "start"]
