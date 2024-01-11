@@ -9,8 +9,8 @@ FROM debian:bookworm-slim AS runner
  
 WORKDIR /backend
 COPY --from=builder /backend/target/release/infrastructure /bin/
+ENV RUST_ENV=production
 RUN apt-get update && \
     apt-get install -y --no-install-recommends openssl libssl-dev
-# CMD ["/usr/bin/env", "-i", "RUST_ENV=production", "/bin/infrastructure"]
-# EXPOSE 8001
+EXPOSE 8000
 CMD ["/bin/infrastructure"]
