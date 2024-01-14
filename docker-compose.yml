@@ -1,15 +1,15 @@
 version: "3.8"
 
 services:
-  node:
-    container_name: node
-    build:
-      context: ./apps/frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./apps/frontend:/apps/frontend
+  # node:
+  #   container_name: node
+  #   build:
+  #     context: ./apps/frontend
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./apps/frontend:/apps/frontend
 
   rust:
     container_name: rust
