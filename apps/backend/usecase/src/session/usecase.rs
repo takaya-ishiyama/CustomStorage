@@ -32,14 +32,7 @@ impl<'r, R: Repositories> SessionInteractor<'r, R> {
             &session.expiration_timestamp_for_refresh,
         )
         .create();
-        let input_session = Session::new(
-            &session.user_id,
-            &create_new_session.access_token,
-            &create_new_session.refresh_token,
-            &create_new_session.expiration_timestamp,
-            &create_new_session.expiration_timestamp_for_refresh,
-        );
-        let session = self.session_repo.update(&input_session).await.unwrap();
+        let session = self.session_repo.update(&create_new_session).await.unwrap();
         Ok(session)
     }
 
@@ -56,16 +49,19 @@ impl<'r, R: Repositories> SessionInteractor<'r, R> {
 // #[cfg(test)]
 // mod tests {
 
-//     use domain::infrastructure::interface::repository::{
-//         session_repository_interface::MockSessionRepository,
-//         user_repository_interface::{MockUserRepository, UserRepository},
+//     use domain::infrastructure::interface::{
+//         db::db_interface::MockDbTrait,
+//         repository::{
+//             session_repository_interface::MockSessionRepository,
+//             user_repository_interface::{MockUserRepository, UserRepository},
+//         },
 //     };
 
 //     use super::*;
 
 //     #[test]
 //     fn test_session_interactor_update_access_token() {
-//         let mock_user_repo = MockUserRepository;
+//         let mut session_repo = MockSessionRepository::new();
 //         assert_eq!(1, 1)
 //     }
 // }

@@ -17,3 +17,11 @@ pub trait Repositories {
     fn user_repo(&self) -> &Self::UserRepo;
     fn session_repo(&self) -> &Self::SessionRepo;
 }
+
+pub trait TestRepositories {
+    type UserRepo: UserRepository;
+    type SessionRepo: SessionRepository;
+
+    fn user_repo(&self) -> &Self::UserRepo;
+    fn session_repo(&self) -> &Self::SessionRepo;
+}
