@@ -1,0 +1,6 @@
+FROM rust:bookworm
+
+WORKDIR /backend
+COPY . .
+EXPOSE 8000
+CMD ["cargo", "run"]
