@@ -10,6 +10,7 @@ use sqlx::{
     types::chrono::{Local, NaiveDateTime},
     Acquire, Pool, Postgres,
 };
+use uuid::Uuid;
 
 #[derive(Clone, Debug)]
 pub struct SessionRepositoryImpl {
@@ -18,7 +19,7 @@ pub struct SessionRepositoryImpl {
 
 #[derive(FromRow)]
 struct CreateToken {
-    user_id: String,
+    user_id: Uuid,
     access_token: String,
     refresh_token: String,
     expiration_timestamp: NaiveDateTime,
@@ -27,7 +28,7 @@ struct CreateToken {
 
 #[derive(FromRow)]
 struct GetAccessTokenByRefreshToken {
-    user_id: String,
+    user_id: Uuid,
     access_token: String,
     refresh_token: String,
     expiration_timestamp: NaiveDateTime,
@@ -36,7 +37,7 @@ struct GetAccessTokenByRefreshToken {
 
 #[derive(FromRow)]
 struct FindByRefreshToken {
-    user_id: String,
+    user_id: Uuid,
     access_token: String,
     refresh_token: String,
     expiration_timestamp: NaiveDateTime,
@@ -67,7 +68,7 @@ impl SessionRepository for SessionRepositoryImpl {
         let token_result = sqlx::query_as::<_, CreateToken>(
             "INSERT INTO session (user_id, access_token, refresh_token, expiration_timestamp, expiration_timestamp_for_refresh) VALUES ($1, $2, $3, $4, $5) RETURNING *",
         )
-        .bind(token.user_id)
+        .bind(Uuid::parse_str(&token.user_id).unwrap())
         .bind(token.access_token)
         .bind(token.refresh_token)
         .bind(token.expiration_timestamp)
@@ -79,7 +80,7 @@ impl SessionRepository for SessionRepositoryImpl {
             Ok(token) => {
                 tx.commit().await.unwrap();
                 Ok(Session::new(
-                    &token.user_id,
+                    &token.user_id.to_string(),
                     &token.access_token,
                     &token.refresh_token,
                     &token.expiration_timestamp,
@@ -109,7 +110,7 @@ impl SessionRepository for SessionRepositoryImpl {
         match session_result {
             Ok(_session) => {
                 let session = Session::new(
-                    &_session.user_id,
+                    &_session.user_id.to_string(),
                     &_session.access_token,
                     &_session.refresh_token,
                     &_session.expiration_timestamp,
@@ -141,7 +142,7 @@ impl SessionRepository for SessionRepositoryImpl {
         .bind(&session.access_token)
         .bind(&session.refresh_token)
         .bind(session.expiration_timestamp)
-        .bind(&session.user_id)
+        .bind(Uuid::parse_str(&session.user_id).unwrap())
         .fetch_one(&mut *tx)
         .await;
 
@@ -149,7 +150,7 @@ impl SessionRepository for SessionRepositoryImpl {
             Ok(session) => {
                 tx.commit().await.unwrap();
                 Ok(Session::new(
-                    &session.user_id,
+                    &session.user_id.to_string(),
                     &session.access_token,
                     &session.refresh_token,
                     &session.expiration_timestamp,
@@ -178,7 +179,7 @@ impl SessionRepository for SessionRepositoryImpl {
             RETURNING *
             ",
         )
-        .bind(&session.user_id)
+        .bind(Uuid::parse_str(&session.user_id).unwrap())
         .bind(&session.access_token)
         .bind(&session.refresh_token)
         .bind(session.expiration_timestamp)
@@ -190,7 +191,7 @@ impl SessionRepository for SessionRepositoryImpl {
             Ok(session) => {
                 tx.commit().await.unwrap();
                 Ok(Session::new(
-                    &session.user_id,
+                    &session.user_id.to_string(),
                     &session.access_token,
                     &session.refresh_token,
                     &session.expiration_timestamp,

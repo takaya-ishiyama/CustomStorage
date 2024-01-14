@@ -11,6 +11,7 @@ use sqlx::{
     types::chrono::{Local, NaiveDateTime},
     Acquire, Pool, Postgres,
 };
+use uuid::Uuid;
 
 #[derive(Clone, Debug)]
 pub struct UserRepositoryImpl {
@@ -19,7 +20,7 @@ pub struct UserRepositoryImpl {
 
 #[derive(FromRow)]
 struct FindOne {
-    id: String,
+    id: Uuid,
     username: String,
     #[sqlx(skip)]
     password: String,
@@ -27,7 +28,7 @@ struct FindOne {
 
 #[derive(FromRow)]
 struct Create {
-    id: String,
+    id: Uuid,
     username: String,
     #[sqlx(skip)]
     password: String,
@@ -35,7 +36,7 @@ struct Create {
 
 #[derive(FromRow)]
 struct FindWithToken {
-    id: String,
+    id: Uuid,
     username: String,
     #[sqlx(skip)]
     password: String,
@@ -49,7 +50,7 @@ struct FindWithToken {
 #[derive(FromRow)]
 struct CreateSession {
     // id: i32,
-    user_id: String,
+    user_id: Uuid,
     access_token: String,
     refresh_token: String,
     expiration_timestamp: NaiveDateTime,
@@ -67,12 +68,12 @@ impl UserRepository for UserRepositoryImpl {
         conn.begin().await.unwrap();
 
         let user = sqlx::query_as::<_, FindOne>("SELECT * FROM users WHERE id = $1")
-            .bind(id)
+            .bind(Uuid::parse_str(id).unwrap())
             .fetch_one(conn)
             .await
             .unwrap();
 
-        UserTrait::new(&user.id, &user.username, &user.password).unwrap()
+        UserTrait::new(&user.id.to_string(), &user.username, &user.password).unwrap()
     }
 
     async fn find_by_username_and_password(
@@ -97,7 +98,7 @@ impl UserRepository for UserRepositoryImpl {
             Err(err) => return Err(err.to_string()),
         };
 
-        Ok(UserTrait::new(&user.id, &user.username, &user.password).unwrap())
+        Ok(UserTrait::new(&user.id.to_string(), &user.username, &user.password).unwrap())
     }
 
     async fn find_with_token(&self, token: &str) -> Result<User, String> {
@@ -131,7 +132,7 @@ impl UserRepository for UserRepositoryImpl {
         };
 
         let token = Session::new(
-            &user_with_session.id,
+            &user_with_session.id.to_string(),
             &user_with_session.access_token,
             &user_with_session.refresh_token,
             &user_with_session.expiration_timestamp,
@@ -143,7 +144,7 @@ impl UserRepository for UserRepositoryImpl {
         }
 
         Ok(UserTrait::new(
-            &user_with_session.id,
+            &user_with_session.id.to_string(),
             &user_with_session.username,
             &user_with_session.password,
         )
@@ -166,7 +167,7 @@ impl UserRepository for UserRepositoryImpl {
         match create_user_result {
             Ok(create_user) => {
                 let session_input_data = Session::new(
-                    &create_user.id,
+                    &create_user.id.to_string(),
                     "",
                     "",
                     &Local::now().naive_local(),
@@ -177,7 +178,7 @@ impl UserRepository for UserRepositoryImpl {
                 let session_result = sqlx::query_as::<_, CreateSession>(
                     "INSERT INTO session (user_id, access_token, refresh_token, expiration_timestamp, expiration_timestamp_for_refresh) VALUES ($1, $2, $3, $4, $5) RETURNING *",
                 )
-                .bind(session_input_data.user_id)
+                .bind(Uuid::parse_str(&session_input_data.user_id).unwrap())
                 .bind(session_input_data.access_token)
                 .bind(session_input_data.refresh_token)
                 .bind(session_input_data.expiration_timestamp)
@@ -193,7 +194,7 @@ impl UserRepository for UserRepositoryImpl {
                 tx.commit().await.unwrap();
 
                 let session = Session::new(
-                    &created_session.user_id,
+                    &created_session.user_id.to_string(),
                     &created_session.access_token,
                     &created_session.refresh_token,
                     &created_session.expiration_timestamp,
@@ -201,7 +202,7 @@ impl UserRepository for UserRepositoryImpl {
                 );
 
                 let user_result = User::new(
-                    &create_user.id,
+                    &create_user.id.to_string(),
                     &create_user.username,
                     &create_user.password,
                 );

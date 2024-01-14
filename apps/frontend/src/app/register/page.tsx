@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { ProviderWrapper } from "../hooks/Provider/ProviderWrapper";
 import { CustomHeader } from "../components/features/CustomHeader";
