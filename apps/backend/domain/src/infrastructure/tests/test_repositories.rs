@@ -7,24 +7,24 @@ use crate::infrastructure::interface::repository::{
     user_repository_interface::MockUserRepository,
 };
 
-pub struct TestRepositories {
-    user_repo: MockUserRepository,
-    session_repo: MockSessionRepository,
-}
+// pub struct TestRepositories {
+//     user_repo: MockUserRepository,
+//     session_repo: MockSessionRepository,
+// }
 
-impl Repositories for TestRepositories {
-    type UserRepo = MockUserRepository;
-    type SessionRepo = MockSessionRepository;
+// impl Repositories for TestRepositories {
+//     type UserRepo = MockUserRepository;
+//     type SessionRepo = MockSessionRepository;
 
-    fn new(_db: Arc<Pool<Postgres>>) -> Self {
-        unimplemented!()
-    }
+//     fn new(_db: Arc<Pool<Postgres>>) -> Self {
+//         unimplemented!()
+//     }
 
-    fn user_repo(&self) -> &Self::UserRepo {
-        &self.user_repo
-    }
+//     fn user_repo(&self) -> &Self::UserRepo {
+//         &self.user_repo
+//     }
 
-    fn session_repo(&self) -> &Self::SessionRepo {
-        &self.session_repo
-    }
-}
+//     fn session_repo(&self) -> &Self::SessionRepo {
+//         &self.session_repo
+//     }
+// }
