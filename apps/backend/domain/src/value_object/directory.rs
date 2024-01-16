@@ -1,0 +1,71 @@
+use chrono::NaiveDateTime;
+
+#[derive(Clone)]
+pub struct Directory {
+    id: String,
+    user_id: String,
+    name: String,
+    parent_id: Option<String>,
+    created_at: NaiveDateTime,
+}
+
+pub struct Directories {
+    directories: Vec<Directory>,
+}
+
+impl Directory {
+    pub fn new(
+        id: String,
+        user_id: String,
+        name: String,
+        parent_id: Option<String>,
+        created_at: NaiveDateTime,
+    ) -> Self {
+        Self {
+            id,
+            user_id,
+            name,
+            parent_id,
+            created_at,
+        }
+    }
+    pub fn not_exist_parent_id(&self) -> bool {
+        if self.parent_id.is_none() {
+            return true;
+        }
+        false
+    }
+    pub fn check_parent_id(&self, parent_id: &str) -> bool {
+        if self.parent_id == Some(parent_id.to_string()) {
+            return true;
+        }
+        false
+    }
+}
+
+impl Directories {
+    pub fn new(directories: Vec<Directory>) -> Self {
+        Self { directories }
+    }
+    pub fn find_by_pearent_id(&self, parent_id: Option<String>) -> Self {
+        // let mut result: Vec<Directory> = Vec::new();
+        match parent_id {
+            Some(parent_id) => Self {
+                directories: self
+                    .directories
+                    .iter()
+                    .filter(|directory| directory.check_parent_id(&parent_id))
+                    .cloned()
+                    .collect(),
+            },
+            None => Self {
+                directories: self
+                    .directories
+                    .iter()
+                    .filter(|directory| directory.not_exist_parent_id())
+                    .cloned()
+                    .collect(),
+            },
+        }
+    }
+}

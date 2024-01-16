@@ -1,10 +1,11 @@
 CREATE TABLE directories (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id uuid REFERENCES users(id) NOT NULL,
-    directories_id uuid REFERENCES directories(id),
+    name VARCHAR(50) NOT NULL,
+    parent_id uuid REFERENCES directories(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
-    CHECK (id <> directories_id)
+    CHECK (id <> parent_id)
 );
 
 CREATE TABLE items (
