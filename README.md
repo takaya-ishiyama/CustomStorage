@@ -2,7 +2,7 @@
 https://mermaid-js.github.io/mermaid-live-editor/edit#pako:eNqtVF1PwjAU_Ss3fZIEEzXhZW8ERzRGohh8WrLU9SKNW7u0d1ED_He7jsEGw-89rNvtaXvOubd3yRItkAUMzaXkz4ZnkQIoLBoLy_ITYDa7vgQp4O4GIjaZRKwKPw6no6vh9GRw1gPFM_STfZhNru9n4T7oYjDoQc6tfdVGtLYhmaElnuWQGOSEIua0PyMwxd3MunxZtFZqtaEoFXUwnIbjcBpORuGDFxQ7xLhEeHUnUvQiBh00eZK4zWPSL6g6FXuUwblBu-iA7XjjWy4NJ8cz3gbpB9h4rk28Oeg_TBPSYELaSLS_yO1XtpbZb1h7AM65QUVbeINMc8EvpUnC7AtRDSqNs1v0j3Cq7Tg_c08PCN_ob8W7cFZ8t3S9shZLHzlisk9AV6VXyCetU-QK8uIplXbxJxVVk1itTk9Xq_o-QgCpfpYq3vy3cXrZdDhopcFoTXs1Wq_xegM_fAZrba1fVXlz0JVcgtsCqaE-AUE17Ciu9cEk67MMTcalcC3SZyxitMAMIxaUNYxzXqRUurt2UF6QfnhXCQvIFNhnRS6cnZu-WgdRSEfytuq6vvmuPwA2yc9S
 
 ## dockerチートシート
-滅び: docker-compose down --rmi all --volumes --remove-orphans
-system prune: docker system prune -a
-image prune: docker image prune -a
-volume prune: docker image volume -a
+- 滅び: docker-compose down --rmi all --volumes --remove-orphans
+- system prune: docker system prune -a
+- image prune: docker image prune -a
+- volume prune: docker image volume -a
