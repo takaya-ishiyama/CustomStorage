@@ -92,6 +92,7 @@ impl DirectoriesRepository for DirectoriesRepositoryImpl {
             "
             INSERT INTO directories (user_id, name, parent_id)
             VALUES ($1, $2, $3)
+            RETURNING *
             ",
         )
         .bind(dto.get_user_id())
