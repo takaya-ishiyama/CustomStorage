@@ -2,7 +2,10 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use domain::{
-    infrastructure::interface::repository::directory_repository_interface::DirectoriesRepository,
+    infrastructure::{
+        dto::directories::create_input_dto::CreateInputDto,
+        interface::repository::directory_repository_interface::DirectoriesRepository,
+    },
     value_object::directory::Directory,
 };
 use sqlx::{prelude::FromRow, types::chrono::NaiveDateTime, Acquire, Error, Pool, Postgres};
@@ -37,7 +40,7 @@ impl DirectoriesRepository for DirectoriesRepositoryImpl {
         Self { db }
     }
 
-    async fn find_by_user_id(&self, user_id: &str) -> Result<Vec<Directory>, Error> {
+    async fn find_by_user_id(&self, user_id: &Uuid) -> Result<Vec<Directory>, String> {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         let mut tx = conn.begin().await.unwrap();
@@ -52,14 +55,14 @@ impl DirectoriesRepository for DirectoriesRepositoryImpl {
                 user_id = $1
             "#,
         )
-        .bind(Uuid::parse_str(user_id).unwrap())
+        .bind(user_id)
         .fetch_all(&mut *tx)
         .await;
 
         let dir_array = match rows {
             Err(e) => {
                 tx.rollback().await.unwrap();
-                return Err(e);
+                return Err(e.to_string());
             }
             Ok(rows) => {
                 tx.commit().await.unwrap();
@@ -80,27 +83,27 @@ impl DirectoriesRepository for DirectoriesRepositoryImpl {
         Ok(items)
     }
 
-    async fn create(&self, user_id: &str, parent_id: &str, name: &str) -> Result<Directory, Error> {
+    async fn create<'a>(&self, dto: CreateInputDto<'a>) -> Result<Directory, String> {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         let mut tx = conn.begin().await.unwrap();
 
         let rows = sqlx::query_as::<_, Create>(
-            r#"
+            "
             INSERT INTO directories (user_id, name, parent_id)
             VALUES ($1, $2, $3)
-            "#,
+            ",
         )
-        .bind(Uuid::parse_str(user_id).unwrap())
-        .bind(name)
-        .bind(Uuid::parse_str(parent_id).unwrap())
+        .bind(dto.get_user_id())
+        .bind(dto.get_name())
+        .bind(dto.get_parent_id())
         .fetch_one(&mut *tx)
         .await;
 
         match rows {
             Err(e) => {
                 tx.rollback().await.unwrap();
-                return Err(e);
+                return Err(e.to_string());
             }
             Ok(dir) => {
                 tx.commit().await.unwrap();
@@ -126,12 +129,18 @@ mod tests {
     use super::*;
 
     #[sqlx::test]
-    async fn test_dir_repo(pool: PgPool) -> sqlx::Result<()> {
+    async fn test_dir_repo_create_parent_id_null(pool: PgPool) -> sqlx::Result<()> {
         setup_database(&pool).await;
         let db = Arc::new(pool);
         let repo = DirectoriesRepositoryImpl::new(db);
 
-        assert_eq!(1, 1);
+        let user = get_test_user();
+
+        let dto = CreateInputDto::new(&user[0].0.id, &None, "test_dir");
+
+        let dir = repo.create(dto).await.unwrap();
+
+        assert_eq!(dir.get_name(), "test_dir");
 
         Ok(())
     }

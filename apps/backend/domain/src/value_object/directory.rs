@@ -41,6 +41,11 @@ impl Directory {
         }
         false
     }
+
+    /**テスト用。それ以外で使用してはいけない */
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
 }
 
 impl Directories {

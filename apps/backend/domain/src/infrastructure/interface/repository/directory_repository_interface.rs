@@ -5,12 +5,15 @@ use mockall::automock;
 use sqlx::{Error, Pool, Postgres};
 use uuid::Uuid;
 
-use crate::value_object::directory::Directory;
+use crate::{
+    infrastructure::dto::directories::create_input_dto::CreateInputDto,
+    value_object::directory::Directory,
+};
 
 #[automock]
 #[async_trait]
 pub trait DirectoriesRepository {
     fn new(db: Arc<Pool<Postgres>>) -> Self;
-    async fn find_by_user_id(&self, user_id: &str) -> Result<Vec<Directory>, Error>;
-    async fn create(&self, user_id: &str, parent_id: &str, name: &str) -> Result<Directory, Error>;
+    async fn find_by_user_id(&self, user_id: &Uuid) -> Result<Vec<Directory>, String>;
+    async fn create<'a>(&self, dto: CreateInputDto<'a>) -> Result<Directory, String>;
 }
