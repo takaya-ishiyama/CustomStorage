@@ -186,4 +186,26 @@ mod tests {
 
         Ok(())
     }
+
+    #[sqlx::test]
+    async fn test_dir_repo_find_by_user_id_any_dir(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
+        let db = Arc::new(pool);
+        let repo = DirectoriesRepositoryImpl::new(db);
+
+        let user = get_test_user();
+
+        let dto = CreateInputDto::new(&user[0].0.id, &None, "test_dir");
+        let dir = repo.create(&dto).await.unwrap();
+
+        let dto = CreateInputDto::new(&user[0].0.id, &Some(dir.get_id()), "test_dir_2");
+        repo.create(&dto).await.unwrap();
+
+        let dto = FindByUserIdDto::new(&user[0].0.id);
+        let dirs = repo.find_by_user_id(&dto).await.unwrap();
+
+        assert_eq!(dirs.len(), 2);
+
+        Ok(())
+    }
 }
