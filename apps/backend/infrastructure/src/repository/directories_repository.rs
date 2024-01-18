@@ -3,7 +3,9 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use domain::{
     infrastructure::{
-        dto::directories::create_input_dto::CreateInputDto,
+        dto::directories::{
+            create_input_dto::CreateInputDto, find_by_user_id_dto::FindByUserIdDto,
+        },
         interface::repository::directory_repository_interface::DirectoriesRepository,
     },
     value_object::directory::Directory,
@@ -40,7 +42,7 @@ impl DirectoriesRepository for DirectoriesRepositoryImpl {
         Self { db }
     }
 
-    async fn find_by_user_id(&self, user_id: &Uuid) -> Result<Vec<Directory>, String> {
+    async fn find_by_user_id(&self, dto: &FindByUserIdDto) -> Result<Vec<Directory>, String> {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         let mut tx = conn.begin().await.unwrap();
@@ -55,7 +57,7 @@ impl DirectoriesRepository for DirectoriesRepositoryImpl {
                 user_id = $1
             "#,
         )
-        .bind(user_id)
+        .bind(dto.get_user_id())
         .fetch_all(&mut *tx)
         .await;
 
@@ -83,7 +85,7 @@ impl DirectoriesRepository for DirectoriesRepositoryImpl {
         Ok(items)
     }
 
-    async fn create<'a>(&self, dto: CreateInputDto<'a>) -> Result<Directory, String> {
+    async fn create<'a>(&self, dto: &CreateInputDto<'a>) -> Result<Directory, String> {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         let mut tx = conn.begin().await.unwrap();
@@ -139,9 +141,48 @@ mod tests {
 
         let dto = CreateInputDto::new(&user[0].0.id, &None, "test_dir");
 
-        let dir = repo.create(dto).await.unwrap();
+        let dir = repo.create(&dto).await.unwrap();
 
         assert_eq!(dir.get_name(), "test_dir");
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn test_dir_repo_create_with_parent_id(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
+        let db = Arc::new(pool);
+        let repo = DirectoriesRepositoryImpl::new(db);
+
+        let user = get_test_user();
+
+        let dto = CreateInputDto::new(&user[0].0.id, &None, "test_dir");
+        let pearent_dir = repo.create(&dto).await.unwrap();
+
+        let dto = CreateInputDto::new(&user[0].0.id, &Some(pearent_dir.get_id()), "test_dir_2");
+
+        let dir = repo.create(&dto).await.unwrap();
+
+        assert_eq!(dir.get_parent_id().unwrap(), pearent_dir.get_id());
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn test_dir_repo_find_by_user_id(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
+        let db = Arc::new(pool);
+        let repo = DirectoriesRepositoryImpl::new(db);
+
+        let user = get_test_user();
+
+        let dto = CreateInputDto::new(&user[0].0.id, &None, "test_dir");
+        let dir = repo.create(&dto).await.unwrap();
+
+        let dto = FindByUserIdDto::new(&user[0].0.id);
+        let dirs = repo.find_by_user_id(&dto).await.unwrap();
+
+        assert_eq!(dirs[0].get_id(), dir.get_id());
 
         Ok(())
     }

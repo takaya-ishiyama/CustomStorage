@@ -46,6 +46,16 @@ impl Directory {
     pub fn get_name(&self) -> &str {
         &self.name
     }
+
+    /**テスト用。それ以外で使用してはいけない */
+    pub fn get_id(&self) -> &str {
+        &self.id
+    }
+
+    /**テスト用。それ以外で使用してはいけない */
+    pub fn get_parent_id(&self) -> Option<String> {
+        self.parent_id.clone()
+    }
 }
 
 impl Directories {
