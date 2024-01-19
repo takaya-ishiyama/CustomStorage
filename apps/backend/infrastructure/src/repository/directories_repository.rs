@@ -4,7 +4,8 @@ use async_trait::async_trait;
 use domain::{
     infrastructure::{
         dto::directories::{
-            create_input_dto::CreateInputDto, find_by_user_id_dto::FindByUserIdDto,
+            create_input_dto::CreateInputDto, find_by_pearent_id_dto::FindByPearentIdDto,
+            find_by_user_id_dto::FindByUserIdDto,
         },
         interface::repository::directory_repository_interface::DirectoriesRepository,
     },
@@ -19,7 +20,7 @@ pub struct DirectoriesRepositoryImpl {
 }
 
 #[derive(FromRow)]
-struct FindByUserId {
+struct Find {
     id: Uuid,
     user_id: Uuid,
     name: String,
@@ -47,7 +48,7 @@ impl DirectoriesRepository for DirectoriesRepositoryImpl {
         let conn = pool.acquire().await.unwrap();
         let mut tx = conn.begin().await.unwrap();
         let mut items = Vec::new();
-        let rows = sqlx::query_as::<_, FindByUserId>(
+        let rows = sqlx::query_as::<_, Find>(
             r#"
             SELECT
                 *
@@ -58,6 +59,49 @@ impl DirectoriesRepository for DirectoriesRepositoryImpl {
             "#,
         )
         .bind(dto.get_user_id())
+        .fetch_all(&mut *tx)
+        .await;
+
+        let dir_array = match rows {
+            Err(e) => {
+                tx.rollback().await.unwrap();
+                return Err(e.to_string());
+            }
+            Ok(rows) => {
+                tx.commit().await.unwrap();
+                rows
+            }
+        };
+
+        for dir in dir_array.iter() {
+            items.push(Directory::new(
+                dir.id.to_string(),
+                dir.user_id.to_string(),
+                dir.name.to_string(),
+                dir.parent_id.map(|id| id.to_string()),
+                dir.created_at,
+            ));
+        }
+
+        Ok(items)
+    }
+
+    async fn find_by_pearent_id(&self, dto: &FindByPearentIdDto) -> Result<Vec<Directory>, String> {
+        let mut pool = self.db.acquire().await.unwrap();
+        let conn = pool.acquire().await.unwrap();
+        let mut tx = conn.begin().await.unwrap();
+        let mut items = Vec::new();
+        let rows = sqlx::query_as::<_, Find>(
+            r#"
+            SELECT
+                *
+            FROM
+                directories
+            WHERE
+                parent_id = $1
+            "#,
+        )
+        .bind(dto.get_pearent_id())
         .fetch_all(&mut *tx)
         .await;
 
@@ -205,6 +249,28 @@ mod tests {
         let dirs = repo.find_by_user_id(&dto).await.unwrap();
 
         assert_eq!(dirs.len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn test_dir_repo_find_by_pearent_id(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
+        let db = Arc::new(pool);
+        let repo = DirectoriesRepositoryImpl::new(db);
+
+        let user = get_test_user();
+
+        let dto = CreateInputDto::new(&user[0].0.id, &None, "test_dir");
+        let pearent_dir = repo.create(&dto).await.unwrap();
+
+        let dto = CreateInputDto::new(&user[0].0.id, &Some(pearent_dir.get_id()), "test_dir_2");
+        let children_dir = repo.create(&dto).await.unwrap();
+
+        let dto = FindByPearentIdDto::new(pearent_dir.get_id());
+        let dirs = repo.find_by_pearent_id(&dto).await.unwrap();
+
+        assert_eq!(dirs[0].get_id(), children_dir.get_id());
 
         Ok(())
     }
