@@ -1,15 +1,14 @@
 use domain::{
     infrastructure::{
-        dto::directories::find_by_user_id_dto::FindByUserIdDto,
+        dto::directories::{
+            create_input_dto::CreateInputDto, find_by_user_id_dto::FindByUserIdDto,
+        },
         interface::repository::{
             directory_repository_interface::DirectoriesRepository,
-            repository_interface::Repositories, session_repository_interface::SessionRepository,
+            repository_interface::Repositories,
         },
     },
-    value_object::{
-        service::Service,
-        token::{Session, SessionInterface},
-    },
+    value_object::{directory::Directory, service::Service},
 };
 
 #[derive(Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -35,6 +34,21 @@ impl<'r, R: Repositories> ServiceInteractor<'r, R> {
                 let service = Service::new(Some(directories), None);
                 Ok(service)
             }
+            Err(e) => Err(e),
+        }
+    }
+
+    pub async fn create_directory(
+        &self,
+        user_id: &str,
+        name: &str,
+        parent_id: Option<&str>,
+    ) -> Result<Directory, String> {
+        let directory_dto = CreateInputDto::new(user_id, &parent_id, name);
+        let directory = self.directories_repo.create(&directory_dto).await;
+
+        match directory {
+            Ok(directory) => Ok(directory),
             Err(e) => Err(e),
         }
     }

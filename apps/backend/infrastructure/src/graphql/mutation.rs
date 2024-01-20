@@ -1,10 +1,13 @@
 use async_graphql::{Context, Object, SimpleObject};
 use domain::infrastructure::interface::repository::repository_interface::Repositories;
-use usecase::user::usecase::UserInteractor;
+use usecase::{service::usecase::ServiceInteractor, user::usecase::UserInteractor};
 
 use crate::{db::persistence::postgres::Db, repository::repository_impl::RepositoryImpls};
 
-use super::schema::auth::{SessionSchema, UserSchema};
+use super::schema::{
+    auth::{SessionSchema, UserSchema},
+    service::DirectorySchema,
+};
 
 pub struct Mutation;
 
@@ -42,5 +45,27 @@ impl Mutation {
                 Some(create_user.1.refresh_token),
             ),
         })
+    }
+
+    async fn create_directory<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        #[graphql(desc = "user_id")] user_id: String,
+        #[graphql(desc = "name")] name: String,
+        #[graphql(desc = "parent_id")] parent_id: Option<String>,
+    ) -> Result<DirectorySchema, String> {
+        let db = ctx.data::<Db>().unwrap().0.clone();
+        let repo = RepositoryImpls::new(db);
+
+        let user_usecase = ServiceInteractor::new(&repo);
+
+        let directory = user_usecase
+            .create_directory(&user_id, &name, parent_id.as_deref())
+            .await;
+
+        match directory {
+            Ok(directory) => Ok(DirectorySchema::new(&directory)),
+            Err(e) => Err(e),
+        }
     }
 }

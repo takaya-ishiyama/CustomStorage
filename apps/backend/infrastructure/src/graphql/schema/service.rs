@@ -2,7 +2,7 @@ use async_graphql::SimpleObject;
 use domain::value_object::{directory::Directory, items::Item, service::Service};
 
 #[derive(SimpleObject)]
-struct DirectorySchema {
+pub struct DirectorySchema {
     id: String,
     user_id: String,
     name: String,

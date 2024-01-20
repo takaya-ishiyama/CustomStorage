@@ -5,6 +5,13 @@ type CreateUser {
 	session: SessionSchema!
 }
 
+type DirectorySchema {
+	id: String!
+	userId: String!
+	name: String!
+	parentId: String
+}
+
 
 type GetNewToken {
 	id: Int
@@ -19,6 +26,12 @@ type GetUser {
 }
 
 
+
+type ItemSchema {
+	id: String!
+	directoriesId: String!
+	texts: String!
+}
 
 type Login {
 	id: String!
@@ -59,6 +72,17 @@ type Query {
 		"""
 		id: String!
 	): GetUser!
+	getRootDirectory(
+		"""
+		user_id
+		"""
+		userId: String!
+	): ServiceSchema!
+}
+
+type ServiceSchema {
+	directories: [DirectorySchema!]
+	items: [ItemSchema!]
 }
 
 type SessionSchema {
