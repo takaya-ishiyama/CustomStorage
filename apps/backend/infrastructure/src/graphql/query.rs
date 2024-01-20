@@ -101,6 +101,7 @@ impl Query {
         };
         Ok(user)
     }
+
     async fn get_user<'ctx>(
         &self,
         ctx: &Context<'ctx>,
