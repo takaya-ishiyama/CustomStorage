@@ -50,6 +50,20 @@ type Mutation {
 		"""
 		password: String!
 	): CreateUser!
+	createDirectory(
+		"""
+		user_id
+		"""
+		userId: String!,
+		"""
+		name
+		"""
+		name: String!,
+		"""
+		parent_id
+		"""
+		parentId: String
+	): DirectorySchema!
 }
 
 type Query {
