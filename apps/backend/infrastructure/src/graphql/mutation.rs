@@ -1,6 +1,6 @@
 use async_graphql::{Context, Object, SimpleObject};
 use domain::infrastructure::interface::repository::repository_interface::Repositories;
-use usecase::{session::usecase::SessionInteractor, user::usecase::UserInteractor};
+use usecase::user::usecase::UserInteractor;
 
 use crate::{db::persistence::postgres::Db, repository::repository_impl::RepositoryImpls};
 

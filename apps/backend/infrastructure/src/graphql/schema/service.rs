@@ -1,6 +1,5 @@
-use async_graphql::{Object, OutputType, SimpleObject};
+use async_graphql::SimpleObject;
 use domain::value_object::{directory::Directory, items::Item, service::Service};
-use sqlx::types::chrono::NaiveDateTime;
 
 #[derive(SimpleObject)]
 struct DirectorySchema {
@@ -48,7 +47,7 @@ impl ItemSchema {
 }
 
 impl ServiceSchema {
-    pub fn new(service: Service) -> Self {
+    pub fn new(service: &Service) -> Self {
         Self {
             directories: service.get_directories().clone().map(|directories| {
                 directories

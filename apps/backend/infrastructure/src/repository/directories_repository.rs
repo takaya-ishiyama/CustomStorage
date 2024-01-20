@@ -11,7 +11,7 @@ use domain::{
     },
     value_object::directory::Directory,
 };
-use sqlx::{prelude::FromRow, types::chrono::NaiveDateTime, Acquire, Error, Pool, Postgres};
+use sqlx::{prelude::FromRow, types::chrono::NaiveDateTime, Acquire, Pool, Postgres};
 use uuid::Uuid;
 
 #[derive(Clone, Debug)]

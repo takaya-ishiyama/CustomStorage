@@ -1,9 +1,6 @@
 use crate::{db::persistence::postgres::Db, repository::repository_impl::RepositoryImpls};
 use async_graphql::*;
-use domain::{
-    infrastructure::interface::repository::repository_interface::Repositories,
-    value_object::service::Service,
-};
+use domain::infrastructure::interface::repository::repository_interface::Repositories;
 use usecase::{
     service::usecase::ServiceInteractor, session::usecase::SessionInteractor,
     user::usecase::UserInteractor,
@@ -128,6 +125,6 @@ impl Query {
         let repo = RepositoryImpls::new(db);
         let service_usecase = ServiceInteractor::new(&repo);
         let service = service_usecase.get_root_directory(&user_id).await.unwrap();
-        Ok(ServiceSchema::new(service))
+        Ok(ServiceSchema::new(&service))
     }
 }
