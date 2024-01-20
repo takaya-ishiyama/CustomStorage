@@ -1,9 +1,18 @@
 use crate::{db::persistence::postgres::Db, repository::repository_impl::RepositoryImpls};
 use async_graphql::*;
-use domain::infrastructure::interface::repository::repository_interface::Repositories;
-use usecase::{session::usecase::SessionInteractor, user::usecase::UserInteractor};
+use domain::{
+    infrastructure::interface::repository::repository_interface::Repositories,
+    value_object::service::Service,
+};
+use usecase::{
+    service::usecase::ServiceInteractor, session::usecase::SessionInteractor,
+    user::usecase::UserInteractor,
+};
 
-use super::schema::auth::{SessionSchema, UserSchema};
+use super::schema::{
+    auth::{SessionSchema, UserSchema},
+    service::ServiceSchema,
+};
 
 #[derive(SimpleObject)]
 struct GetUser {
@@ -108,5 +117,17 @@ impl Query {
             user: UserSchema::new(user.0.id, user.1.username),
         };
         Ok(user)
+    }
+
+    async fn get_root_directory<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        #[graphql(desc = "user_id")] user_id: String,
+    ) -> Result<ServiceSchema> {
+        let db = ctx.data::<Db>().unwrap().0.clone();
+        let repo = RepositoryImpls::new(db);
+        let service_usecase = ServiceInteractor::new(&repo);
+        let service = service_usecase.get_root_directory(&user_id).await.unwrap();
+        Ok(ServiceSchema::new(service))
     }
 }

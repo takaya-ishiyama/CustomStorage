@@ -29,6 +29,17 @@ impl Directory {
             created_at,
         }
     }
+
+    // FIXME: async garaphqlのために書いてるがあまり使いたくない
+    pub fn get_properties(&self) -> (&str, &str, &str, Option<&str>, &NaiveDateTime) {
+        (
+            &self.id,
+            &self.user_id,
+            &self.name,
+            self.parent_id.as_deref(),
+            &self.created_at,
+        )
+    }
     pub fn not_exist_parent_id(&self) -> bool {
         if self.parent_id.is_none() {
             return true;

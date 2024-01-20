@@ -21,6 +21,11 @@ impl Item {
             created_at,
         }
     }
+
+    // FIXME: async garaphqlのために書いてるがあまり使いたくない
+    pub fn get_properties(&self) -> (&str, &str, &str, &NaiveDateTime) {
+        (&self.id, &self.directory_id, &self.texts, &self.created_at)
+    }
 }
 
 impl Items {

@@ -26,11 +26,7 @@ impl<'r, R: Repositories> ServiceInteractor<'r, R> {
         }
     }
 
-    pub async fn get_current_directory_servicies(
-        &self,
-        user_id: &str,
-        current_dir: &str,
-    ) -> Result<Service, String> {
+    pub async fn get_root_directory(&self, user_id: &str) -> Result<Service, String> {
         let directory_dto = FindByUserIdDto::new(user_id);
         let directories = self.directories_repo.find_by_user_id(&directory_dto).await;
 
