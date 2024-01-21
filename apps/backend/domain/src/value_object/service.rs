@@ -1,4 +1,4 @@
-use super::{directory::Directory, items::Item};
+use super::{directory::Directory, interface::service_interface::ServiceInterface, items::Item};
 
 #[derive(Clone, Default)]
 pub struct Service {
@@ -6,18 +6,18 @@ pub struct Service {
     items: Option<Vec<Item>>,
 }
 
-impl Service {
-    pub fn new(directories: Option<Vec<Directory>>, items: Option<Vec<Item>>) -> Self {
+impl ServiceInterface for Service {
+    fn new(directories: Option<Vec<Directory>>, items: Option<Vec<Item>>) -> Self {
         Self { directories, items }
     }
 
     // FIXME: async garaphqlのために書いてるがあまり使いたくない
-    pub fn get_directories(&self) -> &Option<Vec<Directory>> {
+    fn get_directories(&self) -> &Option<Vec<Directory>> {
         &self.directories
     }
 
     // FIXME: async garaphqlのために書いてるがあまり使いたくない
-    pub fn get_items(&self) -> &Option<Vec<Item>> {
+    fn get_items(&self) -> &Option<Vec<Item>> {
         &self.items
     }
 

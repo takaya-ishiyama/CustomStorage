@@ -8,7 +8,9 @@ use domain::{
             repository_interface::Repositories,
         },
     },
-    value_object::{directory::Directory, service::Service},
+    value_object::{
+        directory::Directory, interface::service_interface::ServiceInterface, service::Service,
+    },
 };
 
 #[derive(Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
@@ -31,7 +33,7 @@ impl<'r, R: Repositories> ServiceInteractor<'r, R> {
 
         match directories {
             Ok(directories) => {
-                let service = Service::new(Some(directories), None);
+                let service = ServiceInterface::new(Some(directories), None);
                 Ok(service)
             }
             Err(e) => Err(e),

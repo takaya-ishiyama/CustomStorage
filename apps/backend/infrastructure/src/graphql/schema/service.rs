@@ -1,5 +1,8 @@
 use async_graphql::SimpleObject;
-use domain::value_object::{directory::Directory, items::Item, service::Service};
+use domain::value_object::{
+    directory::Directory, interface::service_interface::ServiceInterface, items::Item,
+    service::Service,
+};
 
 #[derive(SimpleObject)]
 pub struct DirectorySchema {
