@@ -16,7 +16,7 @@ export const AuthCheckProvider: React.FC<PropsWithChildren> = ({
 	const { data, isLoading, isError } = useQueryUserWithNewToken({
 		options: {
 			retry: 1,
-			onSettled: (data) => {
+			onSuccess: (data) => {
 				if (data === undefined) return;
 				setUser({ id: data.id, username: data.username });
 				router.replace(getHome(data.id));
