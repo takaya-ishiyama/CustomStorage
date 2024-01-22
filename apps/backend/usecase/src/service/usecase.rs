@@ -1,7 +1,8 @@
 use domain::{
     infrastructure::{
         dto::directories::{
-            create_input_dto::CreateInputDto, find_by_user_id_dto::FindByUserIdDto,
+            create_input_dto::CreateInputDto, find_by_pearent_id_dto::FindByPearentIdDto,
+            find_by_user_id_dto::FindByUserIdDto,
         },
         interface::repository::{
             directory_repository_interface::DirectoriesRepository,
@@ -37,6 +38,43 @@ impl<'r, R: Repositories> ServiceInteractor<'r, R> {
                 Ok(service)
             }
             Err(e) => Err(e),
+        }
+    }
+
+    pub async fn get_own_service(
+        &self,
+        user_id: &str,
+        pearent_id: &Option<String>,
+    ) -> Result<Service, String> {
+        match pearent_id {
+            Some(pearent_id) => {
+                let directory_dto = FindByPearentIdDto::new(pearent_id);
+
+                let directories = self
+                    .directories_repo
+                    .find_by_pearent_id(&directory_dto)
+                    .await;
+
+                match directories {
+                    Ok(directories) => {
+                        let service = ServiceInterface::new(Some(directories), None);
+                        Ok(service)
+                    }
+                    Err(e) => Err(e),
+                }
+            }
+            None => {
+                let directory_dto = FindByUserIdDto::new(user_id);
+                let directories = self.directories_repo.find_by_user_id(&directory_dto).await;
+
+                match directories {
+                    Ok(directories) => {
+                        let service = ServiceInterface::new(Some(directories), None);
+                        Ok(service)
+                    }
+                    Err(e) => Err(e),
+                }
+            }
         }
     }
 

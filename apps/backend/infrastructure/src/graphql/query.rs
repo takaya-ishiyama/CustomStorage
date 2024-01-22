@@ -128,4 +128,19 @@ impl Query {
         let service = service_usecase.get_root_directory(&user_id).await.unwrap();
         Ok(ServiceSchema::new(&service))
     }
+    async fn get_own_directory<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        #[graphql(desc = "user_id")] user_id: String,
+        #[graphql(desc = "pearent_id")] pearent_id: Option<String>,
+    ) -> Result<ServiceSchema> {
+        let db = ctx.data::<Db>().unwrap().0.clone();
+        let repo = RepositoryImpls::new(db);
+        let service_usecase = ServiceInteractor::new(&repo);
+        let service = service_usecase
+            .get_own_service(&user_id, &pearent_id)
+            .await
+            .unwrap();
+        Ok(ServiceSchema::new(&service))
+    }
 }

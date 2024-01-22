@@ -92,6 +92,16 @@ type Query {
 		"""
 		userId: String!
 	): ServiceSchema!
+	getOwnDirectory(
+		"""
+		user_id
+		"""
+		userId: String!,
+		"""
+		pearent_id
+		"""
+		pearentId: String
+	): ServiceSchema!
 }
 
 type ServiceSchema {
