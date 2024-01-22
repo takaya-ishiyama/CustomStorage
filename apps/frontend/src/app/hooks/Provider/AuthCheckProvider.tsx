@@ -28,7 +28,7 @@ export const AuthCheckProvider: React.FC<PropsWithChildren> = ({
 	});
 
 	// FIXME: なんかずっとローディングになってる
-	// if (isLoading) return <Loading />;
-	if (data?.id) return null;
+	if (isLoading) return <Loading />;
+	if (data?.id === undefined) return <>Error</>;
 	return <>{children}</>;
 };

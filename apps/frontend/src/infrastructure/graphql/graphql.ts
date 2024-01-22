@@ -22,6 +22,14 @@ export type CreateUser = {
   username: Scalars['String']['output'];
 };
 
+export type DirectorySchema = {
+  __typename?: 'DirectorySchema';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  parentId?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['String']['output'];
+};
+
 export type GetNewToken = {
   __typename?: 'GetNewToken';
   accessToken?: Maybe<Scalars['String']['output']>;
@@ -36,6 +44,13 @@ export type GetUser = {
   username: Scalars['String']['output'];
 };
 
+export type ItemSchema = {
+  __typename?: 'ItemSchema';
+  directoriesId: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  texts: Scalars['String']['output'];
+};
+
 export type Login = {
   __typename?: 'Login';
   id: Scalars['String']['output'];
@@ -45,7 +60,15 @@ export type Login = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createDirectory: DirectorySchema;
   createUser: CreateUser;
+};
+
+
+export type MutationCreateDirectoryArgs = {
+  name: Scalars['String']['input'];
+  parentId?: InputMaybe<Scalars['String']['input']>;
+  userId: Scalars['String']['input'];
 };
 
 
@@ -58,9 +81,15 @@ export type Query = {
   __typename?: 'Query';
   currentToken?: Maybe<Scalars['String']['output']>;
   getNewToken: GetNewToken;
+  getRootDirectory: ServiceSchema;
   getUser: GetUser;
   login: Login;
   loginWithToken: GetUser;
+};
+
+
+export type QueryGetRootDirectoryArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -72,6 +101,12 @@ export type QueryGetUserArgs = {
 export type QueryLoginArgs = {
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
+};
+
+export type ServiceSchema = {
+  __typename?: 'ServiceSchema';
+  directories?: Maybe<Array<DirectorySchema>>;
+  items?: Maybe<Array<ItemSchema>>;
 };
 
 export type SessionSchema = {

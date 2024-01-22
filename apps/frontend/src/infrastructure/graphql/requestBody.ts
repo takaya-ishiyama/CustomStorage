@@ -11,6 +11,16 @@ export const mutation = {
 		}
 	}
 	`,
+	create_directory: () => `
+	mutation CreateDirectoryMutation($userId: String!, $name: String!, $parentId: String) {
+		createDirectory(userId: $userId, name: $name, parentId: $parentId){
+		  id
+		  userId
+		  name
+		  parentId
+		}
+	  }
+	`,
 };
 
 export const query = {

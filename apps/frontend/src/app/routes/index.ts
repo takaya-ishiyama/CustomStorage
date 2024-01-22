@@ -7,7 +7,7 @@ export const Routes = {
 
 export const useRoutes = () => {
 	const getTop = () => "/";
-	const getHome = (userId: string) => `${userId}/home`;
+	const getHome = (userId: string) => `/${userId}/home`;
 	const getLogin = () => "/login";
 	const getRegister = () => "/register";
 	return {
