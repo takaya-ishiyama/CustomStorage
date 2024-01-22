@@ -12,7 +12,13 @@ export const DirectoriesList = () => {
 
 	return (
 		<>
-			<Button onClick={() => {}}>Button</Button>
+			<Button
+				onClick={() => {
+					handleClick({ userId: user.id ?? "", name: "test", parentId: null });
+				}}
+			>
+				CreateDir後で場所を移す
+			</Button>
 		</>
 	);
 };
