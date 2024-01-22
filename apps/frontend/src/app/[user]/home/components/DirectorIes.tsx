@@ -10,10 +10,13 @@ import { Loading } from "@/app/components/molecules/Loading";
 
 export const DirectoriesList = () => {
 	const user = useAtomValue(userAtom);
-	const { handleClick, isLoading: isMutate } = useCreateDirectory();
-	const { data, isLoading } = useGetRootDirectory({
+	const { data, isLoading, refetch } = useGetRootDirectory({
 		userId: user.id ?? "",
 		options: { retry: 3 },
+	});
+	const { createDirectory, isLoading: isMutate } = useCreateDirectory({
+		refetchDirectories: refetch,
+		parentId: null,
 	});
 
 	if (isLoading) return <Loading />;
@@ -22,7 +25,7 @@ export const DirectoriesList = () => {
 			<Button
 				disabled={isMutate}
 				onClick={() => {
-					handleClick({ userId: user.id ?? "", name: "test", parentId: null });
+					createDirectory({ name: "test" });
 				}}
 			>
 				CreateDir後で場所を移す
