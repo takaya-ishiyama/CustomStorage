@@ -13,6 +13,7 @@ export const DirectoriesList = () => {
 	return (
 		<>
 			<Button
+				disabled={isLoading}
 				onClick={() => {
 					handleClick({ userId: user.id ?? "", name: "test", parentId: null });
 				}}
