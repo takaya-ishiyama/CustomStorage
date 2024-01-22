@@ -7,7 +7,6 @@ import { Box } from "@radix-ui/themes";
 export const MainContents: React.FC = () => {
 	return (
 		<>
-			<Box>aaaaaaaaaaaa</Box>
 			<DirectoriesList />
 		</>
 	);
