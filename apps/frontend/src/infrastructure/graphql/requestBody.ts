@@ -52,4 +52,22 @@ export const query = {
 		}
 	}
 	`,
+
+	get_root_directory: () => `
+		query GetFRootDirectory($userId: String!) {
+			getRootDirectory(userId: $userId){
+				directories{
+					id
+					userId
+					parentId
+					name
+				}
+				items{
+					id
+					directoriesId
+					texts
+				}
+			}
+		}
+	`,
 };
