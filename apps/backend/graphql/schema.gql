@@ -92,7 +92,7 @@ type Query {
 		"""
 		userId: String!
 	): ServiceSchema!
-	getOwnDirectory(
+	getOwnDirectories(
 		"""
 		user_id
 		"""

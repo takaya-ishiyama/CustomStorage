@@ -38,7 +38,7 @@ export const useCreateDirectory = ({ refetchDirectories, parentId }: Props) => {
 	);
 
 	return {
-		handleClick,
+		createDirectory,
 		isLoading,
 	};
 };

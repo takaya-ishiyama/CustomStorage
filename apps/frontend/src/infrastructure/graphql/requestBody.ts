@@ -70,4 +70,22 @@ export const query = {
 			}
 		}
 	`,
+
+	get_own_directories: () => `
+		query GetFOwnDirectories($userId: String!, $pearentId: String) {
+			getOwnDirectories(userId: $userId, pearentId: $pearentId){
+				directories{
+					id
+					userId
+					parentId
+					name
+				}
+				items{
+					id
+					directoriesId
+					texts
+				}
+			}
+		}
+	`,
 };

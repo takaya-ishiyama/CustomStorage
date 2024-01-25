@@ -81,10 +81,17 @@ export type Query = {
   __typename?: 'Query';
   currentToken?: Maybe<Scalars['String']['output']>;
   getNewToken: GetNewToken;
+  getOwnDirectories: ServiceSchema;
   getRootDirectory: ServiceSchema;
   getUser: GetUser;
   login: Login;
   loginWithToken: GetUser;
+};
+
+
+export type QueryGetOwnDirectoriesArgs = {
+  pearentId?: InputMaybe<Scalars['String']['input']>;
+  userId: Scalars['String']['input'];
 };
 
 

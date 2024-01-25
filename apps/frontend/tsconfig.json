@@ -23,5 +23,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/hooks/Provider/AuthProvider.tss"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "./src/infrastructure/graphql/gql.ts"]
 }

@@ -6,13 +6,17 @@ import { useMutateLoginUser } from "../hooks/useMutateLoginUser";
 import { useHandleAfter } from "../hooks/useHandleAfter";
 import { Button, Flex } from "@radix-ui/themes";
 import { useQueryUserWithNewToken } from "@/infrastructure/Query/authorization";
+import { useRouter } from "next/navigation";
+import { getRoutes } from "@/app/routes";
 
 export const LoginFormContents = () => {
-	const { data } = useQueryUserWithNewToken({
+	const router = useRouter();
+	const { data, isLoading: queryLoading } = useQueryUserWithNewToken({
 		options: {
 			retry: 3,
 			onSuccess: (data) => {
 				console.log("data", data);
+				router.push(getRoutes.home(data.id));
 			},
 			onError: (error) => {
 				console.log("error", error);
@@ -40,6 +44,8 @@ export const LoginFormContents = () => {
 	const handleSubmit = handleSubmitWrapper(({ username, password }) =>
 		handleClickLogin({ username, password }),
 	);
+
+	if (queryLoading || isLoading) return <div>loading</div>;
 
 	return (
 		<div>

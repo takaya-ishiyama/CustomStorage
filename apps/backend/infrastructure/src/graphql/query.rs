@@ -128,7 +128,7 @@ impl Query {
         let service = service_usecase.get_root_directory(&user_id).await.unwrap();
         Ok(ServiceSchema::new(&service))
     }
-    async fn get_own_directory<'ctx>(
+    async fn get_own_directories<'ctx>(
         &self,
         ctx: &Context<'ctx>,
         #[graphql(desc = "user_id")] user_id: String,

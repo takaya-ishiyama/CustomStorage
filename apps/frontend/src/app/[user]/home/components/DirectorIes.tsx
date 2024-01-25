@@ -5,12 +5,12 @@ import { Box, Button } from "@radix-ui/themes";
 import { useAtomValue } from "jotai";
 import React from "react";
 import { useCreateDirectory } from "../hooks/useCreateDirectory";
-import { useGetRootDirectory } from "@/infrastructure/Query/service/useGetRootDirectory";
 import { Loading } from "@/app/components/molecules/Loading";
+import { useGetOwnDirectories } from "@/infrastructure/Query/service/useGetOwnDirectories";
 
 export const DirectoriesList = () => {
 	const user = useAtomValue(userAtom);
-	const { data, isLoading, refetch } = useGetRootDirectory({
+	const { data, isLoading, refetch } = useGetOwnDirectories({
 		userId: user.id ?? "",
 		options: { retry: 3 },
 	});
@@ -25,6 +25,7 @@ export const DirectoriesList = () => {
 			<Button
 				disabled={isMutate}
 				onClick={() => {
+					// バリデーションするラッパーに囲んでhandleClick~という命名にする
 					createDirectory({ name: "test" });
 				}}
 			>

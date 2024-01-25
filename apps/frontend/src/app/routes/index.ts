@@ -17,3 +17,10 @@ export const useRoutes = () => {
 		getRegister,
 	};
 };
+
+export const getRoutes = {
+	top: () => "/",
+	home: (userId: string) => `/${userId}/home`,
+	login: () => "/login",
+	register: () => "/register",
+};
