@@ -7,6 +7,7 @@ import { useAtomValue } from "jotai";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import { useCreateDirectory } from "../../home/hooks/useCreateDirectory";
+import { FullWithModal } from "@/app/components/molecules";
 
 export const DirectoriesContents = () => {
 	const user = useAtomValue(userAtom);
@@ -32,6 +33,8 @@ export const DirectoriesContents = () => {
 
 	return (
 		<>
+			{/* <CreateDirectory /> */}
+			<FullWithModal />
 			<Button
 				disabled={isMutate}
 				onClick={() => {
