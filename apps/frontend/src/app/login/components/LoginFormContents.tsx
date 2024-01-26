@@ -13,7 +13,7 @@ export const LoginFormContents = () => {
 	const router = useRouter();
 	const { data, isLoading: queryLoading } = useQueryUserWithNewToken({
 		options: {
-			retry: 3,
+			retry: 1,
 			onSuccess: (data) => {
 				console.log("data", data);
 				router.push(getRoutes.home(data.id));

@@ -21,6 +21,8 @@ export const useRoutes = () => {
 export const getRoutes = {
 	top: () => "/",
 	home: (userId: string) => `/${userId}/home`,
+	owndir: ({ userId, dirId }: { userId: string; dirId: string }) =>
+		`/${userId}/${dirId}`,
 	login: () => "/login",
 	register: () => "/register",
 };

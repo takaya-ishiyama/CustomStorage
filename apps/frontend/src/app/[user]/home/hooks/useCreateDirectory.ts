@@ -27,13 +27,12 @@ export const useCreateDirectory = ({ refetchDirectories, parentId }: Props) => {
 		},
 	});
 	const createDirectory = React.useCallback(
-		(input: CreateDirectoryProps) => {
+		(input: CreateDirectoryProps) =>
 			mutate({
 				name: input.name,
 				parentId: parentId,
 				userId: user.id ?? "",
-			});
-		},
+			}),
 		[mutate, parentId, user.id],
 	);
 

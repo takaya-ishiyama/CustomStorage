@@ -6,11 +6,14 @@ import { getRoutes, useRoutes } from "../../routes";
 import Loading from "../../loading";
 import { userAtom } from "../jotai/user/atom";
 import { useSetAtom } from "jotai";
+import { Box } from "@radix-ui/themes";
+import Link from "next/link";
 
 export const AuthCheckProvider: React.FC<PropsWithChildren> = ({
 	children,
 }) => {
 	const setUser = useSetAtom(userAtom);
+	const router = useRouter();
 	const { data, isLoading, isError } = useQueryUserWithNewToken({
 		options: {
 			retry: 1,
@@ -25,6 +28,12 @@ export const AuthCheckProvider: React.FC<PropsWithChildren> = ({
 	});
 
 	if (isLoading) return <Loading />;
-	if (data?.id === undefined) return <>Error</>;
+	if (data?.id === undefined)
+		return (
+			<>
+				<Box>Error</Box>
+				<Link href={getRoutes.login()}>ログインへ</Link>
+			</>
+		);
 	return <>{children}</>;
 };

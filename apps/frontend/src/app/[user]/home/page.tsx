@@ -10,10 +10,7 @@ const page = () => {
 	return (
 		<ProviderWrapper>
 			<AuthCheckProvider>
-				{/* <AuthProvider> */}
-				{/* <CustomHeader /> */}
 				<MainContents />
-				{/* </AuthProvider> */}
 			</AuthCheckProvider>
 		</ProviderWrapper>
 	);
