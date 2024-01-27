@@ -34,16 +34,7 @@ export const DirectoriesContents = () => {
 	return (
 		<>
 			{/* <CreateDirectory /> */}
-			<FullWithModal />
-			<Button
-				disabled={isMutate}
-				onClick={() => {
-					// バリデーションするラッパーに囲んでhandleClick~という命名にする
-					createDirectory({ name: "test" });
-				}}
-			>
-				CreateDir後で場所を移す
-			</Button>
+			<FullWithModal isOpen={false} />
 
 			<Box>
 				{data?.directories?.map((d) => (

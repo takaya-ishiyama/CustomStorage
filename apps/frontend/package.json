@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "codegen": "graphql-codegen --config codegen.ts",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@apollo/client": "^3.8.8",
@@ -26,7 +28,8 @@
     "react": "18",
     "react-bubble-ui": "1.1.2",
     "react-dom": "18",
-    "react-hook-form": "^7.49.2",
+    "react-hook-form": "7.49.2",
+    "storybook": "7.6.10",
     "styled-components": "^6.1.6",
     "zod": "^3.22.4"
   },
@@ -38,11 +41,20 @@
     "@graphql-codegen/typescript": "4.0.1",
     "@graphql-codegen/typescript-operations": "4.0.1",
     "@graphql-codegen/typescript-resolvers": "4.0.1",
+    "@storybook/addon-essentials": "^7.6.10",
+    "@storybook/addon-interactions": "^7.6.10",
+    "@storybook/addon-links": "^7.6.10",
+    "@storybook/addon-onboarding": "^1.0.11",
+    "@storybook/blocks": "^7.6.10",
+    "@storybook/nextjs": "^7.6.10",
+    "@storybook/react": "^7.6.10",
+    "@storybook/test": "^7.6.10",
     "@types/node": "20",
     "@types/react": "18",
     "@types/react-dom": "18",
     "eslint": "8",
     "eslint-config-next": "14.0.3",
+    "eslint-plugin-storybook": "^0.6.15",
     "typescript": "5"
   }
 }
