@@ -1,8 +1,8 @@
+"use client";
 import React from "react";
 import { ProviderWrapper } from "../hooks/Provider/ProviderWrapper";
-import { CustomHeader } from "../components/features/CustomHeader";
 import { FormContents } from "./components/FormContents";
-import { Box, Text } from "@radix-ui/themes";
+import { Text } from "@radix-ui/themes";
 
 const Register = () => {
 	return (

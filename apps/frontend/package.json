@@ -17,6 +17,7 @@
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@fontsource/roboto": "5.0.8",
+    "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/themes": "^2.0.3",
     "@types/react-query": "1.2.9",
     "axios": "1.6.3",
