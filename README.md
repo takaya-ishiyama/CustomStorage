@@ -5,4 +5,4 @@ https://mermaid-js.github.io/mermaid-live-editor/edit#pako:eNqtVE1PwzAM_StWTkwaE
 - 滅び: docker-compose down --rmi all --volumes --remove-orphans
 - system prune: docker system prune -a
 - image prune: docker image prune -a
-- volume prune: docker image volume -a
+- volume prune: docker volume prune -a

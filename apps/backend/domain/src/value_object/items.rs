@@ -4,6 +4,7 @@ use chrono::NaiveDateTime;
 pub struct Item {
     id: String,
     directory_id: String,
+    title: String,
     texts: String,
     created_at: NaiveDateTime,
 }
@@ -13,18 +14,31 @@ pub struct Items {
 }
 
 impl Item {
-    pub fn new(id: String, directory_id: &str, texts: &str, created_at: NaiveDateTime) -> Self {
+    pub fn new(
+        id: &str,
+        title: &str,
+        directory_id: &str,
+        texts: &str,
+        created_at: NaiveDateTime,
+    ) -> Self {
         Self {
-            id,
+            id: id.to_string(),
             directory_id: directory_id.to_string(),
+            title: title.to_string(),
             texts: texts.to_string(),
             created_at,
         }
     }
 
     // FIXME: async garaphqlのために書いてるがあまり使いたくない
-    pub fn get_properties(&self) -> (&str, &str, &str, &NaiveDateTime) {
-        (&self.id, &self.directory_id, &self.texts, &self.created_at)
+    pub fn get_properties(&self) -> (&str, &str, &str, &str, &NaiveDateTime) {
+        (
+            &self.id,
+            &self.directory_id,
+            &self.title,
+            &self.texts,
+            &self.created_at,
+        )
     }
 }
 
